@@ -1,15 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Login</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Analytics X</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-    <form action="/login" method="post">
-        <label for="email">Email:</label><br>
-        <input type="text" id="email" name="email"><br>
-        <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password"><br>
-        <input type="submit" value="Login">
-    </form>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center">
+
+  <div class="container mx-auto px-4 py-16">
+    <div class="max-w-md mx-auto bg-black p-8 rounded-lg shadow-lg">
+      <h2 class="text-3xl font-bold mb-6 text-center">Login to your Account</h2>
+      <form action="/login" method="post">
+        <div class="mb-4">
+          <label for="email" class="block text-sm font-medium text-gray-400">Email:</label>
+          <input type="text" id="email" name="email" class="mt-1 block w-full px-3 py-2 bg-gray-900 text-gray-300 border border-gray-600 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+        </div>
+        <div class="mb-6">
+          <label for="password" class="block text-sm font-medium text-gray-400">Password:</label>
+          <input type="password" id="password" name="password" class="mt-1 block w-full px-3 py-2 bg-gray-900 text-gray-300 border border-gray-600 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+        </div>
+        <div class="flex items-center justify-between">
+          <button type="submit" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-pink-500 hover:to-purple-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-4 focus:ring-purple-200 dark:focus:ring-purple-800">Login</button>
+        </div>
+        <p class="text-center text-sm text-gray-400 mt-4">Don't have an account yet? <a href="/signup" class="text-blue-500 hover:underline">Sign up</a></p>
+      </form>
+    </div>
+  </div>
+
 </body>
 </html>

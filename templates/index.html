@@ -1,11 +1,101 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Analytics X</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics X - Billing, Data Management, and Dashboards</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.5/lottie.min.js"></script>
+  <style>
+    .lottie-container {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
 </head>
-<body>
-    <h1>Welcome to Analytics X</h1>
-    <a href="/login">Login</a>
-    <a href="/register">Sign Up</a>
+<body class="bg-black text-white min-h-screen flex flex-col">
+
+  <!-- Navbar -->
+  <nav class="glass p-4 fixed w-full z-10 top-0 left-0">
+    <div class="container mx-auto flex justify-between items-center">
+      <a href="#">
+        <img src="static/images/analytics.png" alt="Analytics X Logo" class="h-8 w-auto">
+      </a>
+      <button class="text-white md:hidden" id="menu-button">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7" />
+        </svg>
+      </button>
+      <ul class="flex space-x-4 hidden md:flex" id="menu">
+        <li><a href="#home" class="text-gray-400 hover:text-white">Home</a></li>
+        <li><a href="#features" class="text-gray-400 hover:text-white">Features</a></li>
+        <li><a href="#contact" class="text-gray-400 hover:text-white">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Sidebar for mobile view -->
+  <div id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-gray-900 text-white transform -translate-x-full transition-transform duration-300 ease-in-out">
+    <div class="p-4">
+      <button class="text-white" id="close-button">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <ul class="p-4 space-y-4">
+      <li><a href="#home" class="text-gray-400 hover:text-white">Home</a></li>
+      <li><a href="#features" class="text-gray-400 hover:text-white">Features</a></li>
+      <li><a href="#contact" class="text-gray-400 hover:text-white">Contact</a></li>
+    </ul>
+  </div>
+
+  <!-- Overlay for sidebar -->
+  <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden"></div>
+
+  <!-- Main Content -->
+  <div class="container mx-auto px-4 py-16 flex flex-col md:flex-row items-center mt-8">
+    <div class="max-w-4xl mx-auto text-left md:w-1/2">
+      <h1 class="mt-4 text-5xl font-extrabold leading-tight animate__animated animate__fadeInLeft">We invest in the world’s potential</h1>
+      <p class="mt-4 text-lg font-bold animate__animated animate__fadeInLeft animate__delay-1s">Here at Analytics X we focus on markets where innovation can unlock long-term value and drive economic growth.</p>
+      <div class="mt-8 flex space-x-4 animate__animated animate__fadeInLeft animate__delay-2s">
+        <a href="/login" class="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-pink-500 hover:to-purple-500 focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 font-bold py-3 px-6 rounded-lg">Log In</a>
+        <a href="/signup" class="bg-gradient-to-br from-pink-500 to-orange-400 hover:from-orange-400 hover:to-pink-500 focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 text-white font-bold py-3 px-6 rounded-lg">Sign Up</a>
+      </div>
+    </div>
+
+    <div class="md:w-1/2 mt-8 md:mt-0">
+      <div id="lottie" class="lottie-container"></div>
+    </div>
+  </div>
+
+  <script>
+    var animation = lottie.loadAnimation({
+      container: document.getElementById('lottie'), // the dom element that will contain the animation
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      path: 'https://lottie.host/9e946758-f31b-4096-9c93-88735a3a2987/yP3jAVBJiZ.json' // the path to the animation json
+    });
+
+    // Menu toggle for mobile view
+    document.getElementById('menu-button').addEventListener('click', function () {
+      document.getElementById('sidebar').classList.remove('-translate-x-full');
+      document.getElementById('overlay').classList.remove('hidden');
+    });
+
+    document.getElementById('close-button').addEventListener('click', function () {
+      document.getElementById('sidebar').classList.add('-translate-x-full');
+      document.getElementById('overlay').classList.add('hidden');
+    });
+
+    document.getElementById('overlay').addEventListener('click', function () {
+      document.getElementById('sidebar').classList.add('-translate-x-full');
+      document.getElementById('overlay').classList.add('hidden');
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/flowbite@2.4.1/dist/flowbite.min.js"></script>
 </body>
 </html>
