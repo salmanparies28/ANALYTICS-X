@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Shops</title>
+</head>
+<body>
+    <h1>Shops</h1>
+    <ul>
+        {% for shop in shops %}
+            <li>{{ shop.name }} - {{ shop.city }}, {{ shop.state }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

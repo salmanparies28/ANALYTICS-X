@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Bills</title>
+</head>
+<body>
+    <h1>Bills</h1>
+    <ul>
+        {% for bill in bills %}
+            <li>{{ bill.date }} - {{ bill.total_price }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

@@ -1,9 +1,12 @@
-from flask import Blueprint
+def register_blueprints(app):
+    from .auth import auth_bp
+    from .shop import shop_bp
+    from .product import product_bp
+    from .billing import billing_bp
+    from .dashboard import dashboard_bp
 
-main = Blueprint('main', __name__)
-user_auth = Blueprint('user_auth', __name__)
-shop = Blueprint('shop', __name__)
-product = Blueprint('product', __name__)
-billing = Blueprint('billing', __name__)
-transactions = Blueprint('transactions', __name__)
-dashboard = Blueprint('dashboard', __name__)
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(shop_bp)
+    app.register_blueprint(product_bp)
+    app.register_blueprint(billing_bp)
+    app.register_blueprint(dashboard_bp)
