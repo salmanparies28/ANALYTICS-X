@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, redirect, url_for
+from flask import Blueprint, request, render_template, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, Organisation
 import random
@@ -45,6 +45,14 @@ def login():
         password = request.form['password']
         user = Organisation.query.filter_by(email=email).first()
         if user and check_password_hash(user.password, password):
-            # Redirect to dashboard after successful login
-            return redirect(url_for('dashboard.dashboard'))
+            # Store user info in session
+            session['user_id'] = user.id
+            session['username'] = user.username
+            return redirect(url_for('auth.home'))
     return render_template('login.html')
+
+@auth_bp.route('/home')
+def home():
+    if 'user_id' in session:
+        return render_template('home.html', username=session['username'])
+    return redirect(url_for('auth.login'))

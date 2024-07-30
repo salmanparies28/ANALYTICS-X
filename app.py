@@ -1,10 +1,15 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, session
 from flask_sqlalchemy import SQLAlchemy
+from flask_session import Session
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///analytics_x.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = 'supersecretkey'  # You should use a more secure key in production
+app.config['SESSION_TYPE'] = 'filesystem'
+
 db = SQLAlchemy(app)
+Session(app)
 
 def register_blueprints(app):
     from blueprints.auth import auth_bp
