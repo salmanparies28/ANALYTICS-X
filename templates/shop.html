@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Create Shop</h1>
+<form method="POST" action="{{ url_for('shop.manage_shop') }}">  <!-- Use the correct endpoint -->
+    {{ form.hidden_tag() }}
+    {{ form.name.label }} {{ form.name }}
+    {{ form.address.label }} {{ form.address }}
+    {{ form.phone.label }} {{ form.phone }}
+    {{ form.submit }}
+</form>
+{% endblock %}

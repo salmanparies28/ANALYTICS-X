@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Generate Bill</h1>
+<form method="POST" action="{{ url_for('billing.manage_billing') }}">
+    {{ form.hidden_tag() }}
+    {{ form.sku.label }} {{ form.sku }}
+    {{ form.quantity.label }} {{ form.quantity }}
+    {{ form.submit }}
+</form>
+{% endblock %}

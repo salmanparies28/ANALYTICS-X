@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Login</h1>
+<form method="POST" action="{{ url_for('user_auth.login') }}">
+    {{ form.hidden_tag() }}
+    {{ form.email.label }} {{ form.email }}
+    {{ form.password.label }} {{ form.password }}
+    {{ form.submit }}
+</form>
+{% endblock %}

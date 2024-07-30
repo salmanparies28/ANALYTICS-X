@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('main.index') }}">Home</a>
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('shop.manage_shop') }}">Shop</a>
+        <a href="{{ url_for('product.add_product') }}">Add Product</a>
+        <a href="{{ url_for('billing.manage_billing') }}">Billing</a>
+        <a href="{{ url_for('transactions.view_transactions') }}">Transactions</a>
+        <a href="{{ url_for('dashboard.view_dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('user_auth.logout') }}">Logout</a>
+        {% else %}
+        <a href="{{ url_for('main.index') }}">Home</a>
+        <a href="{{ url_for('user_auth.signup') }}">Sign Up</a>
+        <a href="{{ url_for('user_auth.login') }}">Login</a>
+        {% endif %}
+    </nav>
+    <div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <ul>
+            {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

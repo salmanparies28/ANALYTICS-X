@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Add Product</h1>
+<form method="POST" action="{{ url_for('product.add_product') }}">
+    {{ form.hidden_tag() }}
+    {{ form.sku.label }} {{ form.sku }}
+    {{ form.name.label }} {{ form.name }}
+    {{ form.net_price.label }} {{ form.net_price }}
+    {{ form.selling_price.label }} {{ form.selling_price }}
+    {{ form.submit }}
+</form>
+{% endblock %}
