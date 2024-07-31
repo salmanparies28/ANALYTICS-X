@@ -2,13 +2,52 @@
 <html>
 <head>
     <title>View Products</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        img {
+            max-width: 100px; 
+            height: auto;
+        }
+    </style>
 </head>
 <body>
     <h1>Products</h1>
-    <ul>
+    <table>
+        <tr>
+            <th>Product Image</th>
+            <th>Product Name</th>
+            <th>SKU</th>
+            <th>Quantity</th>
+            <th>Seller</th>
+        </tr>
         {% for product in products %}
-            <li>{{ product.name }} - {{ product.SKU }}</li>
+        <tr>
+            <td>
+                {% if product.image %}
+                <img src="{{ url_for('static', filename='uploads/' ~ product.image) }}" alt="Product Image">
+                {% else %}
+                    No Image
+                {% endif %}
+            </td>
+            <td>{{ product.name }}</td>
+            <td>{{ product.SKU }}</td>
+            <td>{{ product.quantity }}</td>
+            <td>{{ product.seller }}</td>
+        </tr>
         {% endfor %}
-    </ul>
+    </table>
 </body>
 </html>
