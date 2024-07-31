@@ -4,22 +4,22 @@
     <title>Add Product</title>
 </head>
 <body>
-    <form action="/add_product" method="post">
+    <form action="/add_product" method="post" enctype="multipart/form-data">
         <label for="name">Product Name:</label><br>
         <input type="text" id="name" name="name"><br>
         <label for="SKU">SKU:</label><br>
         <input type="text" id="SKU" name="SKU"><br>
         <label for="category_id">Category ID:</label><br>
         <input type="text" id="category_id" name="category_id"><br>
-        <label for="image">Image URL:</label><br>
-        <input type="text" id="image" name="image"><br>
+        <label for="image">Image:</label><br>
+        <input type="file" id="image" name="image"><br>
         <label for="net_price">Net Price:</label><br>
         <input type="text" id="net_price" name="net_price"><br>
         <label for="selling_price">Selling Price:</label><br>
         <input type="text" id="selling_price" name="selling_price"><br>
         <label for="quantity">Quantity:</label><br>
         <input type="text" id="quantity" name="quantity"><br>
-        <label for="seller">Seller:</label><br>
+        <label for="seller">Seller name:</label><br>
         <input type="text" id="seller" name="seller"><br>
         <input type="submit" value="Add Product">
     </form>
