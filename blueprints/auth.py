@@ -66,3 +66,5 @@ def home():
     if 'user_id' in session:
         return render_template('home.html', username=session['username'])
     return redirect(url_for('auth.login'))
+
+
