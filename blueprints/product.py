@@ -24,7 +24,7 @@ def add_category():
 @product_bp.route('/view_categories')
 def view_categories():
     categories = ProductCategory.query.all()
-    return render_template('view_categories.html', categories=categories)
+    return render_template('view_category.html', categories=categories)
 
 @product_bp.route('/add_product', methods=['GET', 'POST'])
 def add_product():
