@@ -1,20 +1,127 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Home</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home - Analytics X</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <script>
+    // Function to load content into the main content area
+    function loadContent(url, element) {
+      fetch(url)
+        .then(response => response.text())
+        .then(html => {
+          document.getElementById('main-content').innerHTML = html;
+          // Highlight the active sidebar item
+          const items = document.querySelectorAll('.sidebar-item');
+          items.forEach(item => item.classList.remove('active'));
+          element.classList.add('active');
+        })
+        .catch(error => console.error('Error loading content:', error));
+    }
+
+    // Function to logout with confirmation
+    function logout() {
+      if (confirm('Are you sure you want to log out?')) {
+        window.location.href = '/logout';
+      }
+    }
+
+    // Load the default content (Dashboard)
+    document.addEventListener('DOMContentLoaded', () => {
+      loadContent('/dashboard', document.getElementById('dashboard-link'));
+    });
+  </script>
+  <style>
+    .active {
+      background-color: #6366F1;
+      color: white;
+    }
+  </style>
 </head>
-<body>
-    <h1>Welcome, {{ username }}!</h1>
-    <div>
-        <a href="/create_shop"><button>Create Shop</button></a>
-        <a href="/view_shops"><button>View Shops</button></a>
-        <a href="/add_category"><button>Add Category</button></a>
-        <a href="/view_categories"><button>View Categories</button></a>
-        <a href="/add_product"><button>Add Product</button></a>
-        <a href="/view_products"><button>View Products</button></a>
-        <a href="/create_bill"><button>Create Bill</button></a>
-        <a href="/view_bills"><button>View Bills</button></a>
-        <a href="/dashboard"><button>Dashboard</button></a>
+<body class="bg-gray-100 text-gray-800">
+
+  <!-- Sidebar Toggle Button -->
+  <button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" class="inline-flex items-center p-2 mt-2 ml-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200">
+    <span class="sr-only">Open sidebar</span>
+    <i class="fas fa-bars w-6 h-6"></i>
+  </button>
+
+  <!-- Sidebar -->
+  <aside id="default-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
+    <div class="h-full px-3 py-4 overflow-y-auto bg-white border-r border-gray-200">
+      <div class="flex items-center justify-between pb-4 mb-4 border-b border-gray-200">
+        <img src="{{ url_for('static', filename='images/Analytics.png') }}" alt="Logo" class="h-8">
+        <button type="button" onclick="logout()" class="text-gray-500 hover:text-gray-900 focus:outline-none">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+      <ul class="space-y-2 font-medium">
+        <li>
+          <a href="javascript:void(0);" id="dashboard-link" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group sidebar-item" onclick="loadContent('/dashboard', this)">
+            <i class="fas fa-tachometer-alt w-6 h-6 text-gray-500"></i>
+            <span class="ml-3">Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group sidebar-item" onclick="loadContent('/create_shop', this)">
+            <i class="fas fa-store w-6 h-6 text-gray-500"></i>
+            <span class="ml-3">Create Shop</span>
+          </a>
+        </li>
+        <li>
+          <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group sidebar-item" onclick="loadContent('/view_shops', this)">
+            <i class="fas fa-eye w-6 h-6 text-gray-500"></i>
+            <span class="ml-3">View Shops</span>
+          </a>
+        </li>
+        <li>
+          <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group sidebar-item" onclick="loadContent('/add_category', this)">
+            <i class="fas fa-plus-circle w-6 h-6 text-gray-500"></i>
+            <span class="ml-3">Add Category</span>
+          </a>
+        </li>
+        <li>
+          <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group sidebar-item" onclick="loadContent('/view_categories', this)">
+            <i class="fas fa-list w-6 h-6 text-gray-500"></i>
+            <span class="ml-3">View Categories</span>
+          </a>
+        </li>
+        <li>
+          <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group sidebar-item" onclick="loadContent('/add_product', this)">
+            <i class="fas fa-box-open w-6 h-6 text-gray-500"></i>
+            <span class="ml-3">Add Product</span>
+          </a>
+        </li>
+        <li>
+          <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group sidebar-item" onclick="loadContent('/view_products', this)">
+            <i class="fas fa-boxes w-6 h-6 text-gray-500"></i>
+            <span class="ml-3">View Products</span>
+          </a>
+        </li>
+        <li>
+          <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group sidebar-item" onclick="loadContent('/create_bill', this)">
+            <i class="fas fa-file-invoice w-6 h-6 text-gray-500"></i>
+            <span class="ml-3">Create Bill</span>
+          </a>
+        </li>
+        <li>
+          <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group sidebar-item" onclick="loadContent('/view_bills', this)">
+            <i class="fas fa-file-alt w-6 h-6 text-gray-500"></i>
+            <span class="ml-3">View Bills</span>
+          </a>
+        </li>
+      </ul>
     </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="p-4 sm:ml-64">
+    <div id="main-content" class="p-4 border-2 border-gray-200 border-dashed rounded-lg">
+      <!-- Dynamic content will be loaded here -->
+    </div>
+  </div>
+
 </body>
 </html>
