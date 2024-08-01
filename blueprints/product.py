@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, redirect, url_for
+from flask import Blueprint, request, render_template, redirect, url_for, session
 from werkzeug.utils import secure_filename
 import os
 from models import db, ProductCategory, Product
@@ -19,7 +19,10 @@ def add_category():
         db.session.add(new_category)
         db.session.commit()
         return redirect(url_for('product.view_categories'))
-    return render_template('add_category.html')
+    
+    # Get the current user's ID from session or other means
+    user_id = session.get('user_id')
+    return render_template('add_category.html', user_id=user_id)
 
 @product_bp.route('/view_categories')
 def view_categories():
