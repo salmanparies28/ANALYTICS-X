@@ -2,13 +2,43 @@
 <html>
 <head>
     <title>View Bills</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
 </head>
 <body>
-    <h1>Bills</h1>
-    <ul>
-        {% for bill in bills %}
-            <li>{{ bill.date }} - {{ bill.total_price }}</li>
+    <h1>View Bills</h1>
+    <table>
+        <tr>
+            <th>Shop ID</th>
+            <th>Customer ID</th>
+            <th>Product ID</th>
+            <th>SKU Code</th>
+            <th>Date</th>
+            <th>Quantity</th>
+            <th>Total Price</th>
+        </tr>
+        {% for bill, sku in bills %}
+        <tr>
+            <td>{{ bill.shop_id }}</td>
+            <td>{{ bill.customer_id }}</td>
+            <td>{{ bill.product_id }}</td>
+            <td>{{ sku }}</td>
+            <td>{{ bill.date }}</td>
+            <td>{{ bill.quantity }}</td>
+            <td>{{ bill.total_price }}</td>
+        </tr>
         {% endfor %}
-    </ul>
+    </table>
 </body>
 </html>
