@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, redirect, url_for, session
+from flask import Blueprint, request, render_template, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, Organisation
 import random
@@ -15,6 +15,12 @@ def register():
         phone = request.form['phone']
         name = request.form['name']
         company_size = request.form['company_size']
+
+        # Check if email already exists
+        existing_user = Organisation.query.filter_by(email=email).first()
+        if existing_user:
+            flash('User already exists with this email!', 'danger')
+            return redirect(url_for('auth.register'))
         
         # Assign subscription type randomly
         subscription_types = ['A', 'B', 'C', 'D']
@@ -35,6 +41,7 @@ def register():
         )
         db.session.add(new_user)
         db.session.commit()
+        flash('Registered successfully! Please log in.', 'success')
         return redirect(url_for('auth.login'))
     return render_template('register.html')
 
@@ -48,7 +55,10 @@ def login():
             # Store user info in session
             session['user_id'] = user.id
             session['username'] = user.username
+            flash('Logged in successfully!', 'success')
             return redirect(url_for('auth.home'))
+        else:
+            flash('Invalid email or password!', 'danger')
     return render_template('login.html')
 
 @auth_bp.route('/home')
