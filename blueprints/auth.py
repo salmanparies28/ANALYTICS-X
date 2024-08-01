@@ -67,4 +67,29 @@ def home():
         return render_template('home.html', username=session['username'])
     return redirect(url_for('auth.login'))
 
+@auth_bp.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form['email']
+        phone = request.form['phone']
+        user = Organisation.query.filter_by(email=email, phone=phone).first()
+        if user:
+            session['reset_email'] = email
+            flash('Email and phone number verified! You can now reset your password.', 'success')
+            return redirect(url_for('auth.reset_password'))
+        else:
+            flash('No account found with that email and phone number combination.', 'danger')
+    return render_template('forgot_password.html')
 
+@auth_bp.route('/reset-password', methods=['GET', 'POST'])
+def reset_password():
+    if request.method == 'POST':
+        new_password = request.form['password']
+        email = session.get('reset_email')
+        user = Organisation.query.filter_by(email=email).first()
+        if user:
+            user.password = generate_password_hash(new_password)
+            db.session.commit()
+            flash('Password reset successfully! You can now log in.', 'success')
+            return redirect(url_for('auth.login'))
+    return render_template('reset_password.html')
