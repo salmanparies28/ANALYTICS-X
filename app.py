@@ -17,13 +17,11 @@ Session(app)
 
 def register_blueprints(app):
     from blueprints.auth import auth_bp
-    from blueprints.shop import shop_bp
     from blueprints.product import product_bp
     from blueprints.billing import billing_bp
     from blueprints.dashboard import dashboard_bp
 
     app.register_blueprint(auth_bp)
-    app.register_blueprint(shop_bp)
     app.register_blueprint(product_bp)
     app.register_blueprint(billing_bp)
     app.register_blueprint(dashboard_bp)
