@@ -18,11 +18,13 @@ def register_blueprints(app):
     from blueprints.product import product_bp
     from blueprints.billing import billing_bp
     from blueprints.dashboard import dashboard_bp
+    from blueprints.customer import customer_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(product_bp)
     app.register_blueprint(billing_bp)
     app.register_blueprint(dashboard_bp)
+    app.register_blueprint(customer_bp)
 
 register_blueprints(app)
 
