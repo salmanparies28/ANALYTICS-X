@@ -35,7 +35,7 @@
             </select>
         </div>
 
-        <div class="chart-row">
+        <div class="chart-row mb-4">
             <div class="chart-container">
                 <div class="chart-title">Product Category Distribution</div>
                 <canvas id="categoryChart"></canvas>
@@ -72,10 +72,10 @@
             categoryChart = new Chart(document.getElementById('categoryChart'), {
                 type: 'pie',
                 data: {
-                    labels: Object.keys(data.category_data),
+                    labels: data.category_names,
                     datasets: [{
-                        data: Object.values(data.category_data),
-                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'],
+                        data: data.category_data,
+                        backgroundColor: ['rgba(255, 99, 132, 0.5)', 'rgba(54, 162, 235, 0.5)', 'rgba(255, 206, 86, 0.5)', 'rgba(75, 192, 192, 0.5)', 'rgba(153, 102, 255, 0.5)', 'rgba(255, 159, 64, 0.5)'],
                     }]
                 }
             });
@@ -83,11 +83,11 @@
             topProductChart = new Chart(document.getElementById('topProductChart'), {
                 type: 'bar',
                 data: {
-                    labels: Object.keys(data.top_product_data),
+                    labels: data.top_product_names,
                     datasets: [{
                         label: 'Quantity Sold',
-                        data: Object.values(data.top_product_data),
-                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
+                        data: data.top_product_data,
+                        backgroundColor: ['rgba(255, 99, 132, 0.5)', 'rgba(54, 162, 235, 0.5)', 'rgba(255, 206, 86, 0.5)', 'rgba(75, 192, 192, 0.5)', 'rgba(153, 102, 255, 0.5)'],
                     }]
                 },
                 options: {
@@ -102,11 +102,11 @@
             leastProductChart = new Chart(document.getElementById('leastProductChart'), {
                 type: 'bar',
                 data: {
-                    labels: Object.keys(data.least_product_data),
+                    labels: data.least_product_names,
                     datasets: [{
                         label: 'Quantity Sold',
-                        data: Object.values(data.least_product_data),
-                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
+                        data: data.least_product_data,
+                        backgroundColor: ['rgba(255, 99, 132, 0.5)', 'rgba(54, 162, 235, 0.5)', 'rgba(255, 206, 86, 0.5)', 'rgba(75, 192, 192, 0.5)', 'rgba(153, 102, 255, 0.5)'],
                     }]
                 },
                 options: {
@@ -125,8 +125,8 @@
                     datasets: [{
                         label: 'Total Price',
                         data: data.transaction_data.total_prices,
-                        borderColor: '#FF6384',
-                        backgroundColor: '#FF6384',
+                        borderColor: 'rgba(255, 99, 132, 0.5)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
                         fill: false
                     }]
                 },

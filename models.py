@@ -1,5 +1,5 @@
 from app import app, db
-from datetime import datetime 
+from datetime import datetime
 
 class Organisation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -30,18 +30,18 @@ class Product(db.Model):
     seller = db.Column(db.String(100), nullable=False)
     inventory = db.relationship('Inventory', backref='product', lazy=True)
 
+    def restock(self, additional_quantity):
+        self.quantity += additional_quantity
+        db.session.commit()
+
 class Seller(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     contact = db.Column(db.String(50), nullable=False)
     type = db.Column(db.String(50), nullable=False)
-    # Remove shop_id foreign key reference
-    # shop_id = db.Column(db.Integer, db.ForeignKey('shop.id'), nullable=False)
 
 class TransactionRecord(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    # Remove shop_id foreign key reference
-    # shop_id = db.Column(db.Integer, db.ForeignKey('shop.id'), nullable=False)
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
     date = db.Column(db.Date, nullable=False)
@@ -53,7 +53,6 @@ class Customer(db.Model):
     name = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(20), nullable=False)
 
-    # New Inventory model
 class Inventory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
@@ -68,6 +67,9 @@ class Inventory(db.Model):
     def category_name(self):
         return self.category.name
 
+    def restock(self, additional_quantity):
+        self.quantity += additional_quantity
+        db.session.commit()
 
 with app.app_context():
     db.create_all()

@@ -5,7 +5,6 @@ from models import db, ProductCategory, Product, Inventory
 
 product_bp = Blueprint('product', __name__)
 
-# Ensure the upload folder exists
 UPLOAD_FOLDER = 'static/uploads'
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
@@ -42,7 +41,7 @@ def add_product():
             filename = secure_filename(image.filename)
             image_path = os.path.join(UPLOAD_FOLDER, filename)
             image.save(image_path)
-            image_url = os.path.join('uploads', filename)  
+            image_url = os.path.join('uploads', filename)
         else:
             image_url = None
 
@@ -50,7 +49,6 @@ def add_product():
         db.session.add(new_product)
         db.session.commit()
 
-        # Add the product to the Inventory table
         new_inventory = Inventory(product_id=new_product.id, category_id=category_id, quantity=quantity)
         db.session.add(new_inventory)
         db.session.commit()
@@ -62,3 +60,25 @@ def add_product():
 def view_products():
     products = Product.query.all()
     return render_template('view_products.html', products=products)
+
+@product_bp.route('/inventory')
+def inventory():
+    inventories = Inventory.query.all()
+    return render_template('inventory.html', inventories=inventories)
+
+@product_bp.route('/restock_product', methods=['GET', 'POST'])
+def restock_product():
+    if request.method == 'POST':
+        product_id = request.form['product_id']
+        additional_quantity = int(request.form['additional_quantity'])
+
+        product = Product.query.get(product_id)
+        if product:
+            product.restock(additional_quantity)
+            inventory = Inventory.query.filter_by(product_id=product_id).first()
+            if inventory:
+                inventory.restock(additional_quantity)
+
+        return redirect(url_for('product.inventory'))
+    products = Product.query.all()
+    return render_template('restock_product.html', products=products)

@@ -56,8 +56,5 @@ def view_bills():
     ).join(Product, TransactionRecord.product_id == Product.id).all()
     return render_template('view_bills.html', bills=bills)
 
-@billing_bp.route('/inventory')
-def inventory():
-    inventories = Inventory.query.all()
-    return render_template('inventory.html', inventories=inventories)
+
 
