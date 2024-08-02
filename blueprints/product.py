@@ -56,3 +56,7 @@ def add_product():
 def view_products():
     products = Product.query.all()
     return render_template('view_products.html', products=products)
+
+@product_bp.route('/inventory')
+def inventory():
+    return render_template('inventory.html')

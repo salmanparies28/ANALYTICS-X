@@ -17,6 +17,12 @@
           const items = document.querySelectorAll('.sidebar-item');
           items.forEach(item => item.classList.remove('active'));
           element.classList.add('active');
+
+          // Execute scripts from loaded content
+          const scriptTags = document.getElementById('main-content').getElementsByTagName('script');
+          for (let scriptTag of scriptTags) {
+            eval(scriptTag.innerText);
+          }
         })
         .catch(error => console.error('Error loading content:', error));
     }
@@ -98,6 +104,12 @@
           <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group sidebar-item" onclick="loadContent('/view_bills', this)">
             <i class="fas fa-file-alt w-6 h-6 text-gray-500"></i>
             <span class="ml-3">View Bills</span>
+          </a>
+        </li>
+        <li>
+          <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group sidebar-item" onclick="loadContent('/inventory', this)">
+            <i class="fas fa-file-alt w-6 h-6 text-gray-500"></i>
+            <span class="ml-3">Inventory</span>
           </a>
         </li>
       </ul>
