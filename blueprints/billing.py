@@ -7,7 +7,8 @@ billing_bp = Blueprint('billing', __name__)
 @billing_bp.route('/create_bill', methods=['GET', 'POST'])
 def create_bill():
     if request.method == 'POST':
-        shop_id = request.form['shop_id']
+        # Remove shop_id from form data
+        # shop_id = request.form['shop_id']
         customer_id = request.form['customer_id']
         product_id = request.form['product_id']
         quantity = int(request.form['quantity'])  # Convert to integer
@@ -24,7 +25,7 @@ def create_bill():
         total_price = product.selling_price * quantity
 
         new_bill = TransactionRecord(
-            shop_id=shop_id,
+            # shop_id=shop_id,
             customer_id=customer_id,
             product_id=product_id,
             date=date,
