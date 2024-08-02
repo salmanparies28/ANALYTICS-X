@@ -84,11 +84,9 @@ def view_products():
     products = Product.query.all()
     return render_template('view_products.html', products=products)
 
-<<<<<<< HEAD
 
-=======
 @product_bp.route('/inventory')
 def inventory():
     inventories = Inventory.query.all()
     return render_template('inventory.html', inventories=inventories)
->>>>>>> d8266b254a2502393c06c7bc332043c81b946f22
+
