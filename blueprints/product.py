@@ -1,11 +1,10 @@
-from flask import Blueprint, request, render_template, redirect, url_for, session, jsonify
+from flask import Blueprint, request, render_template, redirect, url_for
 from werkzeug.utils import secure_filename
 import os
 from models import db, ProductCategory, Product, Inventory
 
 product_bp = Blueprint('product', __name__)
 
-# Ensure the upload folder exists
 UPLOAD_FOLDER = 'static/uploads'
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
@@ -14,37 +13,17 @@ if not os.path.exists(UPLOAD_FOLDER):
 def add_category():
     if request.method == 'POST':
         name = request.form['name']
-        product_ids = request.form.getlist('products')  # Get list of selected product IDs
-        new_category = ProductCategory(name=name)
+        user_id = request.form['user_id']
+        new_category = ProductCategory(name=name, user_id=user_id)
         db.session.add(new_category)
         db.session.commit()
-
-        # Associate selected products with the new category
-        for product_id in product_ids:
-            product = Product.query.get(product_id)
-            if product:
-                product.category_id = new_category.id
-        db.session.commit()
-
         return redirect(url_for('product.view_categories'))
-
-    products = Product.query.all()
-    return render_template('add_category.html', products=products)
-
+    return render_template('add_category.html')
 
 @product_bp.route('/view_categories')
 def view_categories():
     categories = ProductCategory.query.all()
     return render_template('view_category.html', categories=categories)
-
-
-@product_bp.route('/fetch_products')
-def fetch_products():
-    category_name = request.args.get('category')
-    products = Product.query.join(ProductCategory).filter(ProductCategory.name == category_name).all()
-    
-    product_list = [{'id': product.id, 'name': product.name} for product in products]
-    return jsonify(product_list)
 
 @product_bp.route('/add_product', methods=['GET', 'POST'])
 def add_product():
@@ -62,7 +41,7 @@ def add_product():
             filename = secure_filename(image.filename)
             image_path = os.path.join(UPLOAD_FOLDER, filename)
             image.save(image_path)
-            image_url = os.path.join('uploads', filename)  
+            image_url = os.path.join('uploads', filename)
         else:
             image_url = None
 
@@ -70,7 +49,6 @@ def add_product():
         db.session.add(new_product)
         db.session.commit()
 
-        # Add the product to the Inventory table
         new_inventory = Inventory(product_id=new_product.id, category_id=category_id, quantity=quantity)
         db.session.add(new_inventory)
         db.session.commit()
@@ -83,6 +61,7 @@ def view_products():
     products = Product.query.all()
     return render_template('view_products.html', products=products)
 
+<<<<<<< HEAD
 @product_bp.route('/edit_product/<int:product_id>', methods=['GET'])
 def edit_product(product_id):
     product = Product.query.get_or_404(product_id)
@@ -125,7 +104,29 @@ def delete_product(product_id):
 
     return redirect(url_for('product.view_products'))
 
+=======
+>>>>>>> 38c1bba3d2b8ddebb351ce624e999c1d71ebe432
 @product_bp.route('/inventory')
 def inventory():
     inventories = Inventory.query.all()
     return render_template('inventory.html', inventories=inventories)
+<<<<<<< HEAD
+=======
+
+@product_bp.route('/restock_product', methods=['GET', 'POST'])
+def restock_product():
+    if request.method == 'POST':
+        product_id = request.form['product_id']
+        additional_quantity = int(request.form['additional_quantity'])
+
+        product = Product.query.get(product_id)
+        if product:
+            product.restock(additional_quantity)
+            inventory = Inventory.query.filter_by(product_id=product_id).first()
+            if inventory:
+                inventory.restock(additional_quantity)
+
+        return redirect(url_for('product.inventory'))
+    products = Product.query.all()
+    return render_template('restock_product.html', products=products)
+>>>>>>> 38c1bba3d2b8ddebb351ce624e999c1d71ebe432

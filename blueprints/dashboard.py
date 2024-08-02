@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, jsonify
 import pandas as pd
 from app import db
-from models import Product, TransactionRecord
+from models import Product, TransactionRecord, ProductCategory
 from datetime import datetime, timedelta
 
 dashboard_bp = Blueprint('dashboard', __name__)
@@ -45,34 +45,37 @@ def get_date_range(filter_type):
 
 def get_chart_data(start_date, end_date):
     # Fetch and process data for product categories
-    product_categories = db.session.query(Product.category_id, db.func.count(Product.id)).group_by(Product.category_id).all()
-    category_data = {cat: count for cat, count in product_categories}
+    product_categories = db.session.query(ProductCategory.id, ProductCategory.name, db.func.count(Product.id)).join(Product).group_by(ProductCategory.id).all()
+    category_data = [count for _, _, count in product_categories]
+    category_names = [name for _, name, _ in product_categories]
 
     # Fetch and process data for top 5 selling products
     top_products = db.session.query(
-        TransactionRecord.product_id,
+        Product.name,
         db.func.sum(TransactionRecord.quantity).label('total_quantity')
-    ).filter(
+    ).join(TransactionRecord).filter(
         TransactionRecord.date.between(start_date, end_date)
     ).group_by(
-        TransactionRecord.product_id
+        Product.id
     ).order_by(
         db.desc('total_quantity')
     ).limit(5).all()
-    top_product_data = {prod: qty for prod, qty in top_products}
+    top_product_data = [qty for _, qty in top_products]
+    top_product_names = [name for name, _ in top_products]
 
     # Fetch and process data for least 5 selling products
     least_products = db.session.query(
-        TransactionRecord.product_id,
+        Product.name,
         db.func.sum(TransactionRecord.quantity).label('total_quantity')
-    ).filter(
+    ).join(TransactionRecord).filter(
         TransactionRecord.date.between(start_date, end_date)
     ).group_by(
-        TransactionRecord.product_id
+        Product.id
     ).order_by(
         'total_quantity'
     ).limit(5).all()
-    least_product_data = {prod: qty for prod, qty in least_products}
+    least_product_data = [qty for _, qty in least_products]
+    least_product_names = [name for name, _ in least_products]
 
     # Fetch and process data for transactions
     transactions = db.session.query(TransactionRecord).filter(TransactionRecord.date.between(start_date, end_date)).all()
@@ -85,8 +88,11 @@ def get_chart_data(start_date, end_date):
 
     return {
         'category_data': category_data,
+        'category_names': category_names,
         'top_product_data': top_product_data,
+        'top_product_names': top_product_names,
         'least_product_data': least_product_data,
+        'least_product_names': least_product_names,
         'transaction_data': {
             'labels': df_transaction_agg['Date'].tolist(),
             'total_prices': df_transaction_agg['Total Price'].tolist()
