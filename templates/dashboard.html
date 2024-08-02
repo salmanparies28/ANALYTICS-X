@@ -40,83 +40,99 @@
 
     <script>
         const chartData = {{ chart_data | tojson | safe }};
+        let categoryChart, topProductChart, leastProductChart, transactionChart;
+
+        function initializeCharts(data) {
+            // Destroy existing charts if they exist
+            if (categoryChart) categoryChart.destroy();
+            if (topProductChart) topProductChart.destroy();
+            if (leastProductChart) leastProductChart.destroy();
+            if (transactionChart) transactionChart.destroy();
+
+            // Initialize new charts with updated data
+            categoryChart = new Chart(document.getElementById('categoryChart'), {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(data.category_data),
+                    datasets: [{
+                        data: Object.values(data.category_data),
+                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                    }]
+                }
+            });
+
+            topProductChart = new Chart(document.getElementById('topProductChart'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(data.top_product_data),
+                    datasets: [{
+                        label: 'Quantity Sold',
+                        data: Object.values(data.top_product_data),
+                        backgroundColor: '#36A2EB',
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            leastProductChart = new Chart(document.getElementById('leastProductChart'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(data.least_product_data),
+                    datasets: [{
+                        label: 'Quantity Sold',
+                        data: Object.values(data.least_product_data),
+                        backgroundColor: '#FFCE56',
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            transactionChart = new Chart(document.getElementById('transactionChart'), {
+                type: 'line',
+                data: {
+                    labels: data.transaction_data.labels,
+                    datasets: [{
+                        label: 'Total Price',
+                        data: data.transaction_data.total_prices,
+                        borderColor: '#FF6384',
+                        fill: false
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
 
         document.getElementById('filter-select').addEventListener('change', function() {
             const filter = this.value;
-            window.location.href = `/dashboard?filter=${filter}`;
+            fetch(`/dashboard_data?filter=${filter}`)
+                .then(response => response.json())
+                .then(data => {
+                    initializeCharts(data);
+                })
+                .catch(error => console.error('Error fetching data:', error));
         });
 
-        // Product Category Chart
-        new Chart(document.getElementById('categoryChart'), {
-            type: 'pie',
-            data: {
-                labels: Object.keys(chartData.category_data),
-                datasets: [{
-                    data: Object.values(chartData.category_data),
-                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-                }]
-            }
-        });
-
-        // Top 5 Selling Products Chart
-        new Chart(document.getElementById('topProductChart'), {
-            type: 'bar',
-            data: {
-                labels: Object.keys(chartData.top_product_data),
-                datasets: [{
-                    label: 'Quantity Sold',
-                    data: Object.values(chartData.top_product_data),
-                    backgroundColor: '#36A2EB',
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-
-        // Least 5 Selling Products Chart
-        new Chart(document.getElementById('leastProductChart'), {
-            type: 'bar',
-            data: {
-                labels: Object.keys(chartData.least_product_data),
-                datasets: [{
-                    label: 'Quantity Sold',
-                    data: Object.values(chartData.least_product_data),
-                    backgroundColor: '#FFCE56',
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-
-        // Transaction Chart
-        new Chart(document.getElementById('transactionChart'), {
-            type: 'line',
-            data: {
-                labels: chartData.transaction_data.labels,
-                datasets: [{
-                    label: 'Total Price',
-                    data: chartData.transaction_data.total_prices,
-                    borderColor: '#FF6384',
-                    fill: false
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
+        // Initialize charts on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeCharts(chartData);
         });
     </script>
 </body>

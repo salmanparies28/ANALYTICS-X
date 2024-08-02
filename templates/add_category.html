@@ -19,8 +19,14 @@
             <option value="Dairy Product">
             <option value="Electronics">
         </datalist>
-        <label for="user_id">User ID:</label><br>
-        <input type="text" id="user_id" name="user_id"><br>
+
+        <label for="products">Select Products:</label><br>
+        <select multiple id="products" name="products">
+            {% for product in products %}
+                <option value="{{ product.id }}">{{ product.name }}</option>
+            {% endfor %}
+        </select><br>
+        
         <input type="submit" value="Add Category">
     </form>
 </body>
