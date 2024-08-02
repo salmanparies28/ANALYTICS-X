@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js" integrity="sha512-L0Shl7nXXzIlBSUUPpxrokqq4ojqgZFQczTYlGjzONGTDAcLremjwaWv5A+EDLnxhQzY5xUZPWLOLqYRkY0Cbw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
         .chart-container {
             width: 100%;
@@ -40,88 +39,85 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            const chartData = {{ chart_data | tojson | safe }};
+        const chartData = {{ chart_data | tojson | safe }};
 
-            document.getElementById('filter-select').addEventListener('change', function() {
-                const filter = this.value;
-                window.location.href = `/dashboard?filter=${filter}`;
-            });
+        document.getElementById('filter-select').addEventListener('change', function() {
+            const filter = this.value;
+            window.location.href = `/dashboard?filter=${filter}`;
+        });
 
-            // Product Category Chart
-            new Chart(document.getElementById('categoryChart'), {
-                type: 'pie',
-                data: {
-                    labels: Object.keys(chartData.category_data),
-                    datasets: [{
-                        data: Object.values(chartData.category_data),
-                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-                    }]
-                }
-            });
+        // Product Category Chart
+        new Chart(document.getElementById('categoryChart'), {
+            type: 'pie',
+            data: {
+                labels: Object.keys(chartData.category_data),
+                datasets: [{
+                    data: Object.values(chartData.category_data),
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                }]
+            }
+        });
 
-            // Top 5 Selling Products Chart
-            new Chart(document.getElementById('topProductChart'), {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(chartData.top_product_data),
-                    datasets: [{
-                        label: 'Quantity Sold',
-                        data: Object.values(chartData.top_product_data),
-                        backgroundColor: '#36A2EB',
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+        // Top 5 Selling Products Chart
+        new Chart(document.getElementById('topProductChart'), {
+            type: 'bar',
+            data: {
+                labels: Object.keys(chartData.top_product_data),
+                datasets: [{
+                    label: 'Quantity Sold',
+                    data: Object.values(chartData.top_product_data),
+                    backgroundColor: '#36A2EB',
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
                     }
                 }
-            });
+            }
+        });
 
-            // Least 5 Selling Products Chart
-            new Chart(document.getElementById('leastProductChart'), {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(chartData.least_product_data),
-                    datasets: [{
-                        label: 'Quantity Sold',
-                        data: Object.values(chartData.least_product_data),
-                        backgroundColor: '#FFCE56',
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+        // Least 5 Selling Products Chart
+        new Chart(document.getElementById('leastProductChart'), {
+            type: 'bar',
+            data: {
+                labels: Object.keys(chartData.least_product_data),
+                datasets: [{
+                    label: 'Quantity Sold',
+                    data: Object.values(chartData.least_product_data),
+                    backgroundColor: '#FFCE56',
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
                     }
                 }
-            });
+            }
+        });
 
-            // Transaction Chart
-            new Chart(document.getElementById('transactionChart'), {
-                type: 'line',
-                data: {
-                    labels: chartData.transaction_data.labels,
-                    datasets: [{
-                        label: 'Total Price',
-                        data: chartData.transaction_data.total_prices,
-                        borderColor: '#FF6384',
-                        fill: false
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+        // Transaction Chart
+        new Chart(document.getElementById('transactionChart'), {
+            type: 'line',
+            data: {
+                labels: chartData.transaction_data.labels,
+                datasets: [{
+                    label: 'Total Price',
+                    data: chartData.transaction_data.total_prices,
+                    borderColor: '#FF6384',
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
                     }
                 }
-            });
+            }
         });
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>
