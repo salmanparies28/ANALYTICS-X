@@ -1,7 +1,7 @@
 from flask import Blueprint, request, render_template, redirect, url_for
 from werkzeug.utils import secure_filename
 import os
-from models import db, ProductCategory, Product
+from models import db, ProductCategory, Product, Inventory
 
 product_bp = Blueprint('product', __name__)
 
@@ -49,8 +49,15 @@ def add_product():
         new_product = Product(name=name, SKU=SKU, category_id=category_id, image=image_url, net_price=net_price, selling_price=selling_price, quantity=quantity, seller=seller)
         db.session.add(new_product)
         db.session.commit()
+
+        # Add the product to the Inventory table
+        new_inventory = Inventory(product_id=new_product.id, category_id=category_id, quantity=quantity)
+        db.session.add(new_inventory)
+        db.session.commit()
+
         return redirect(url_for('product.view_products'))
     return render_template('add_product.html')
+
 
 @product_bp.route('/view_products')
 def view_products():
@@ -59,4 +66,5 @@ def view_products():
 
 @product_bp.route('/inventory')
 def inventory():
-    return render_template('inventory.html')
+    inventories = Inventory.query.all()
+    return render_template('inventory.html', inventories=inventories)
