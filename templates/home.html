@@ -6,8 +6,9 @@
   <title>Home - Analytics X</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js" integrity="sha512-L0Shl7nXXzIlBSUUPpxrokqq4ojqgZFQczTYlGjzONGTDAcLremjwaWv5A+EDLnxhQzY5xUZPWLOLqYRkY0Cbw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
   <script>
-    // Function to load content into the main content area
     function loadContent(url, element) {
       fetch(url)
         .then(response => response.text())
@@ -27,14 +28,12 @@
         .catch(error => console.error('Error loading content:', error));
     }
 
-    // Function to logout with confirmation
     function logout() {
       if (confirm('Are you sure you want to log out?')) {
         window.location.href = '/logout';
       }
     }
 
-    // Load the default content (Dashboard)
     document.addEventListener('DOMContentLoaded', () => {
       loadContent('/dashboard', document.getElementById('dashboard-link'));
     });
@@ -137,6 +136,7 @@
       <!-- Dynamic content will be loaded here -->
     </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </body>
 </html>
