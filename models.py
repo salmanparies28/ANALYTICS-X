@@ -17,6 +17,7 @@ class ProductCategory(db.Model):
     name = db.Column(db.String(50), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
     product_list = db.relationship('Product', backref='category', lazy=True)
+    inventory_list = db.relationship('Inventory', backref='category', lazy=True)
 
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -28,6 +29,7 @@ class Product(db.Model):
     selling_price = db.Column(db.Float, nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     seller = db.Column(db.String(100), nullable=False)
+    inventory = db.relationship('Inventory', backref='product', lazy=True)
 
 class Seller(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -51,6 +53,22 @@ class Customer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(20), nullable=False)
+
+    # New Inventory model
+class Inventory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('product_category.id'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+
+    @property
+    def product_name(self):
+        return self.product.name
+
+    @property
+    def category_name(self):
+        return self.category.name
+
 
 with app.app_context():
     db.create_all()
