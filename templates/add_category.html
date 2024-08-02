@@ -8,24 +8,24 @@
         <label for="name">Category Name:</label><br>
         <input list="category_names" id="name" name="name"><br>
         <datalist id="category_names">
-            <option value="Grocery Stores">
-            <option value="Clothing and Apparel">
+            <option value="Grocery">
+            <option value="Fashion">
+            <option value="Mobile">
+            <option value="Toys and Baby">
+            <option value="Sports">
+            <option value="Accessories">
+            <option value="Home Appliance">
+            <option value="Food">
+            <option value="Dairy Product">
             <option value="Electronics">
-            <option value="Jewelry">
-            <option value="Pharmacy">
-            <option value="Food and Beverage">
-            <option value="Furniture">
-            <option value="Books and Stationery">
-            <option value="Footwear">
-            <option value="Home Appliances">
-            <option value="Cosmetics and Beauty">
-            <option value="Sports and Fitness">
-            <option value="Automobiles">
-            <option value="Gift Shops">
-            <option value="Pet Shops">
         </datalist>
-        <!-- Hidden field for user_id -->
-        <input type="hidden" id="user_id" name="user_id" value="{{ user_id }}">
+
+        <label for="products">Select Products:</label><br>
+        <select multiple id="products" name="products">
+            {% for product in products %}
+                <option value="{{ product.id }}">{{ product.name }}</option>
+            {% endfor %}
+        </select><br>
         
         <input type="submit" value="Add Category">
     </form>

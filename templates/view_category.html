@@ -4,7 +4,7 @@
     <title>View Categories</title>
     <style>
         table {
-            width: 50%;
+            width: 100%;
             border-collapse: collapse;
         }
         table, th, td {
@@ -17,6 +17,9 @@
         th {
             background-color: #f2f2f2;
         }
+        .category-row {
+            background-color: #e6f7ff;
+        }
     </style>
 </head>
 <body>
@@ -25,14 +28,20 @@
         <thead>
             <tr>
                 <th>Category Name</th>
-                <th>User ID</th>
+                <th>Products</th>
             </tr>
         </thead>
         <tbody>
             {% for category in categories %}
-                <tr>
+                <tr class="category-row">
                     <td>{{ category.name }}</td>
-                    <td>{{ category.user_id }}</td>
+                    <td>
+                        <ul>
+                            {% for product in category.product_list %}
+                                <li>{{ product.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>

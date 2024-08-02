@@ -10,8 +10,6 @@ app.config['SESSION_TYPE'] = 'filesystem'
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024 
 
-
-
 db = SQLAlchemy(app)
 Session(app)
 
