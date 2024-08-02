@@ -78,15 +78,54 @@ def add_product():
         return redirect(url_for('product.view_products'))
     return render_template('add_product.html')
 
-
 @product_bp.route('/view_products')
 def view_products():
     products = Product.query.all()
     return render_template('view_products.html', products=products)
 
+@product_bp.route('/edit_product/<int:product_id>', methods=['GET'])
+def edit_product(product_id):
+    product = Product.query.get_or_404(product_id)
+    return render_template('edit_product.html', product=product)
+
+@product_bp.route('/update_product/<int:product_id>', methods=['POST'])
+def update_product(product_id):
+    product = Product.query.get_or_404(product_id)
+
+    product.name = request.form['name']
+    product.SKU = request.form['SKU']
+    product.category_id = request.form['category_id']
+    product.net_price = request.form['net_price']
+    product.selling_price = request.form['selling_price']
+    product.quantity = request.form['quantity']
+    product.seller = request.form['seller']
+
+    new_image = request.files.get('new_image')
+    if new_image:
+        filename = secure_filename(new_image.filename)
+        image_path = os.path.join(UPLOAD_FOLDER, filename)
+        new_image.save(image_path)
+        product.image = os.path.join('uploads', filename)
+
+    db.session.commit()
+    return redirect(url_for('product.view_products'))
+
+@product_bp.route('/delete_product/<int:product_id>', methods=['GET'])
+def delete_product(product_id):
+    product = Product.query.get_or_404(product_id)
+    
+    # Remove from Inventory if exists
+    inventory = Inventory.query.filter_by(product_id=product.id).first()
+    if inventory:
+        db.session.delete(inventory)
+    
+    # Delete the product
+    db.session.delete(product)
+    db.session.commit()
+
+    return redirect(url_for('product.view_products'))
 
 @product_bp.route('/inventory')
 def inventory():
     inventories = Inventory.query.all()
     return render_template('inventory.html', inventories=inventories)
-
