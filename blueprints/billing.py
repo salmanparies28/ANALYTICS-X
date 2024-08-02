@@ -1,5 +1,5 @@
 from flask import Blueprint, request, render_template, redirect, url_for
-from models import db, TransactionRecord, Product
+from models import db, TransactionRecord, Product, Inventory, Customer
 from datetime import datetime
 
 billing_bp = Blueprint('billing', __name__)
@@ -7,8 +7,6 @@ billing_bp = Blueprint('billing', __name__)
 @billing_bp.route('/create_bill', methods=['GET', 'POST'])
 def create_bill():
     if request.method == 'POST':
-        # Remove shop_id from form data
-        # shop_id = request.form['shop_id']
         customer_id = request.form['customer_id']
         product_id = request.form['product_id']
         quantity = int(request.form['quantity'])  # Convert to integer
@@ -16,16 +14,25 @@ def create_bill():
         # Automatically set the current date
         date = datetime.now().date()
 
-        # Fetch the product to get the selling price
+        # Fetch the product and its inventory record
         product = Product.query.get(product_id)
-        if product is None:
-            return "Invalid product ID.", 400
+        inventory = Inventory.query.filter_by(product_id=product_id).first()
+
+        if product is None or inventory is None:
+            return "Invalid product or inventory ID.", 400
 
         # Calculate total price
         total_price = product.selling_price * quantity
 
+        # Check if there is enough inventory
+        if inventory.quantity < quantity:
+            return "Not enough inventory available.", 400
+
+        # Update the inventory quantity
+        inventory.quantity -= quantity
+
+        # Create the new bill
         new_bill = TransactionRecord(
-            # shop_id=shop_id,
             customer_id=customer_id,
             product_id=product_id,
             date=date,
@@ -34,8 +41,12 @@ def create_bill():
         )
         db.session.add(new_bill)
         db.session.commit()
+
         return redirect(url_for('billing.view_bills'))
-    return render_template('create_bill.html')
+
+    products = Product.query.all()
+    customers = Customer.query.all()
+    return render_template('create_bill.html', products=products, customers=customers)
 
 @billing_bp.route('/view_bills')
 def view_bills():
@@ -44,3 +55,9 @@ def view_bills():
         Product.SKU
     ).join(Product, TransactionRecord.product_id == Product.id).all()
     return render_template('view_bills.html', bills=bills)
+
+@billing_bp.route('/inventory')
+def inventory():
+    inventories = Inventory.query.all()
+    return render_template('inventory.html', inventories=inventories)
+

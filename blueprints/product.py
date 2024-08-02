@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, redirect, url_for, session, jsonify
+from flask import Blueprint, request, render_template, redirect, url_for
 from werkzeug.utils import secure_filename
 import os
 from models import db, ProductCategory, Product, Inventory
@@ -14,37 +14,17 @@ if not os.path.exists(UPLOAD_FOLDER):
 def add_category():
     if request.method == 'POST':
         name = request.form['name']
-        product_ids = request.form.getlist('products')  # Get list of selected product IDs
-        new_category = ProductCategory(name=name)
+        user_id = request.form['user_id']
+        new_category = ProductCategory(name=name, user_id=user_id)
         db.session.add(new_category)
         db.session.commit()
-
-        # Associate selected products with the new category
-        for product_id in product_ids:
-            product = Product.query.get(product_id)
-            if product:
-                product.category_id = new_category.id
-        db.session.commit()
-
         return redirect(url_for('product.view_categories'))
-
-    products = Product.query.all()
-    return render_template('add_category.html', products=products)
-
+    return render_template('add_category.html')
 
 @product_bp.route('/view_categories')
 def view_categories():
     categories = ProductCategory.query.all()
     return render_template('view_category.html', categories=categories)
-
-
-@product_bp.route('/fetch_products')
-def fetch_products():
-    category_name = request.args.get('category')
-    products = Product.query.join(ProductCategory).filter(ProductCategory.name == category_name).all()
-    
-    product_list = [{'id': product.id, 'name': product.name} for product in products]
-    return jsonify(product_list)
 
 @product_bp.route('/add_product', methods=['GET', 'POST'])
 def add_product():
@@ -78,15 +58,7 @@ def add_product():
         return redirect(url_for('product.view_products'))
     return render_template('add_product.html')
 
-
 @product_bp.route('/view_products')
 def view_products():
     products = Product.query.all()
     return render_template('view_products.html', products=products)
-
-
-@product_bp.route('/inventory')
-def inventory():
-    inventories = Inventory.query.all()
-    return render_template('inventory.html', inventories=inventories)
-

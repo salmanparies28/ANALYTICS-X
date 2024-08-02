@@ -7,8 +7,19 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
         .chart-container {
-            width: 100%;
+            width: 48%; /* Adjust as needed */
             height: 300px; /* Adjust as needed */
+            margin-bottom: 20px;
+        }
+        .chart-title {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .chart-row {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
         }
     </style>
 </head>
@@ -24,17 +35,25 @@
             </select>
         </div>
 
-        <div class="chart-container">
-            <canvas id="categoryChart"></canvas>
+        <div class="chart-row">
+            <div class="chart-container">
+                <div class="chart-title">Product Category Distribution</div>
+                <canvas id="categoryChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Top 5 Selling Products</div>
+                <canvas id="topProductChart"></canvas>
+            </div>
         </div>
-        <div class="chart-container">
-            <canvas id="topProductChart"></canvas>
-        </div>
-        <div class="chart-container">
-            <canvas id="leastProductChart"></canvas>
-        </div>
-        <div class="chart-container">
-            <canvas id="transactionChart"></canvas>
+        <div class="chart-row">
+            <div class="chart-container">
+                <div class="chart-title">Least 5 Selling Products</div>
+                <canvas id="leastProductChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Transaction Amount Over Time</div>
+                <canvas id="transactionChart"></canvas>
+            </div>
         </div>
     </div>
 
@@ -56,7 +75,7 @@
                     labels: Object.keys(data.category_data),
                     datasets: [{
                         data: Object.values(data.category_data),
-                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'],
                     }]
                 }
             });
@@ -68,7 +87,7 @@
                     datasets: [{
                         label: 'Quantity Sold',
                         data: Object.values(data.top_product_data),
-                        backgroundColor: '#36A2EB',
+                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
                     }]
                 },
                 options: {
@@ -87,7 +106,7 @@
                     datasets: [{
                         label: 'Quantity Sold',
                         data: Object.values(data.least_product_data),
-                        backgroundColor: '#FFCE56',
+                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
                     }]
                 },
                 options: {
@@ -107,6 +126,7 @@
                         label: 'Total Price',
                         data: data.transaction_data.total_prices,
                         borderColor: '#FF6384',
+                        backgroundColor: '#FF6384',
                         fill: false
                     }]
                 },
