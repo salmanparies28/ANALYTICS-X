@@ -86,6 +86,20 @@ def get_chart_data(start_date, end_date):
     df_transaction = pd.DataFrame(transaction_data)
     df_transaction_agg = df_transaction.groupby('Date').agg({'Total Price': 'sum'}).reset_index()
 
+    # Fetch and process data for net price and selling price
+    price_data = db.session.query(
+        TransactionRecord.date,
+        db.func.sum(Product.net_price * TransactionRecord.quantity).label('total_net_price'),
+        db.func.sum(Product.selling_price * TransactionRecord.quantity).label('total_selling_price')
+    ).join(Product).filter(
+        TransactionRecord.date.between(start_date, end_date)
+    ).group_by(
+        TransactionRecord.date
+    ).all()
+    price_dates = [record.date.strftime('%Y-%m-%d') for record in price_data]
+    net_prices = [record.total_net_price for record in price_data]
+    selling_prices = [record.total_selling_price for record in price_data]
+
     return {
         'category_data': category_data,
         'category_names': category_names,
@@ -96,5 +110,10 @@ def get_chart_data(start_date, end_date):
         'transaction_data': {
             'labels': df_transaction_agg['Date'].tolist(),
             'total_prices': df_transaction_agg['Total Price'].tolist()
+        },
+        'price_data': {
+            'labels': price_dates,
+            'net_prices': net_prices,
+            'selling_prices': selling_prices
         }
     }

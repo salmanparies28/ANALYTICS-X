@@ -13,18 +13,21 @@
         .then(response => response.text())
         .then(html => {
           document.getElementById('main-content').innerHTML = html;
-          // Highlight the active sidebar item
           const items = document.querySelectorAll('.sidebar-item');
           items.forEach(item => item.classList.remove('active'));
           element.classList.add('active');
 
-          // Execute scripts from loaded content
           const scriptTags = document.getElementById('main-content').getElementsByTagName('script');
           for (let scriptTag of scriptTags) {
             eval(scriptTag.innerText);
           }
         })
         .catch(error => console.error('Error loading content:', error));
+    }
+
+    function toggleDropdown(id) {
+      const dropdown = document.getElementById(id);
+      dropdown.classList.toggle('hidden');
     }
 
     function logout() {
@@ -42,6 +45,17 @@
       background-color: #6366F1;
       color: white;
     }
+    .sidebar {
+      height: 100vh;
+      overflow-y: hidden;
+    }
+    .sidebar:hover {
+      overflow-y: auto;
+    }
+    ::-webkit-scrollbar {
+      width: 0px;
+      background: transparent;
+    }
   </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -53,7 +67,7 @@
   </button>
 
   <!-- Sidebar -->
-  <aside id="default-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
+  <aside id="default-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0 sidebar" aria-label="Sidebar">
     <div class="h-full px-3 py-4 overflow-y-auto bg-white border-r border-gray-200">
       <div class="flex items-center justify-between pb-4 mb-4 border-b border-gray-200">
         <img src="{{ url_for('static', filename='images/Analytics.png') }}" alt="Logo" class="h-8">
@@ -63,37 +77,91 @@
       </div>
       <ul class="space-y-2 font-medium">
         <li>
-          <a href="javascript:void(0);" id="dashboard-link" class="flex items-center p-2  font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/dashboard', this)">
+          <a href="javascript:void(0);" id="dashboard-link" class="flex items-center p-2 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/dashboard', this)">
             <i class="fas fa-tachometer-alt w-6 h-6 text-gray-500"></i>
             <span class="ml-3">Dashboard</span>
           </a>
         </li>
         <li>
-          <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/add_category', this)">
-            <i class="fas fa-plus-circle w-6 h-6 text-gray-500"></i>
-            <span class="ml-3">Add Category</span>
-          </a>
-        </li>
-        <li>
-          <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/view_categories', this)">
-            <i class="fas fa-list w-6 h-6 text-gray-500"></i>
-            <span class="ml-3">View Categories</span>
-          </a>
-        </li>
-        <li>
-          <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/add_product', this)">
+          <button class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="toggleDropdown('product-dropdown')">
             <i class="fas fa-box-open w-6 h-6 text-gray-500"></i>
-            <span class="ml-3">Add Product</span>
-          </a>
+            <span class="ml-3 pr-24">Products</span>
+            <i class="fas fa-chevron-down ml-auto"></i>
+          </button>
+          <ul id="product-dropdown" class="hidden ml-6 space-y-2">
+            <li>
+              <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/add_product', this)">
+                <i class="fas fa-plus-circle w-6 h-6 text-gray-500"></i>
+                <span class="ml-3">Add Product</span>
+              </a>
+            </li>
+            <li>
+              <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/view_products', this)">
+                <i class="fas fa-boxes w-6 h-6 text-gray-500"></i>
+                <span class="ml-3">View Products</span>
+              </a>
+            </li>
+          </ul>
         </li>
         <li>
-          <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/view_products', this)">
-            <i class="fas fa-boxes w-6 h-6 text-gray-500"></i>
-            <span class="ml-3">View Products</span>
-          </a>
+          <button class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="toggleDropdown('category-dropdown')">
+            <i class="fas fa-list w-6 h-6 text-gray-500"></i>
+            <span class="ml-3 pr-20">Categories</span>
+            <i class="fas fa-chevron-down ml-auto"></i>
+          </button>
+          <ul id="category-dropdown" class="hidden ml-6 space-y-2">
+            <li>
+              <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/add_category', this)">
+                <i class="fas fa-plus-circle w-6 h-6 text-gray-500"></i>
+                <span class="ml-3">Add Category</span>
+              </a>
+            </li>
+            <li>
+              <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/view_categories', this)">
+                <i class="fas fa-list w-6 h-6 text-gray-500"></i>
+                <span class="ml-3">View Categories</span>
+              </a>
+            </li>
+          </ul>
         </li>
         <li>
-          <a href="javascript:void(0);" class="flex items-center p-2 font-bold text-gray-900 rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/create_bill', this)">
+          <button class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="toggleDropdown('customer-dropdown')">
+            <i class="fas fa-users w-6 h-6 text-gray-500"></i>
+            <span class="ml-3 pr-20">Customers</span>
+            <i class="fas fa-chevron-down ml-auto"></i>
+          </button>
+          <ul id="customer-dropdown" class="hidden ml-6 space-y-2">
+            <li>
+              <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/add_customer', this)">
+                <i class="fas fa-user-plus w-6 h-6 text-gray-500"></i>
+                <span class="ml-3">Create Customer</span>
+              </a>
+            </li>
+            <li>
+              <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/view_customers', this)">
+                <i class="fas fa-users w-6 h-6 text-gray-500"></i>
+                <span class="ml-3">View Customers</span>
+              </a>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <button class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="toggleDropdown('inventory-dropdown')">
+            <i class="fas fa-warehouse w-6 h-6 text-gray-500"></i>
+            <span class="ml-3 pr-20">Inventory</span>
+            <i class="fas fa-chevron-down ml-auto"></i>
+          </button>
+          <ul id="inventory-dropdown" class="hidden ml-6 space-y-2">
+            <li>
+              <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/restock_product', this)">
+                <i class="fas fa-edit w-6 h-6 text-gray-500"></i>
+                <span class="ml-3">Edit Stocks</span>
+              </a>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/create_bill', this)">
             <i class="fas fa-file-invoice w-6 h-6 text-gray-500"></i>
             <span class="ml-3">Create Bill</span>
           </a>
@@ -102,12 +170,6 @@
           <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/view_bills', this)">
             <i class="fas fa-file-alt w-6 h-6 text-gray-500"></i>
             <span class="ml-3">View Bills</span>
-          </a>
-        </li>
-        <li>
-          <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/inventory', this)">
-            <i class="fas fa-file-alt w-6 h-6 text-gray-500"></i>
-            <span class="ml-3">Inventory</span>
           </a>
         </li>
       </ul>

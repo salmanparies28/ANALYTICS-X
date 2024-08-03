@@ -21,21 +21,29 @@
             justify-content: space-between;
             flex-wrap: wrap;
         }
+        .custom-date {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="container mx-auto p-4">
         <div class="flex justify-end mb-4">
             <select id="filter-select" class="p-2 border border-gray-300 rounded">
-                <option value="today" {% if filter_type == 'today' %}selected{% endif %}>Today</option>
-                <option value="week" {% if filter_type == 'week' %}selected{% endif %}>This Week</option>
-                <option value="month" {% if filter_type == 'month' %}selected{% endif %}>This Month</option>
-                <option value="year" {% if filter_type == 'year' %}selected{% endif %}>This Year</option>
-                <option value="custom" {% if filter_type == 'custom' %}selected{% endif %}>Custom</option>
+                <option value="today">Today</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+                <option value="year">This Year</option>
+                <option value="custom">Custom</option>
             </select>
+            <div class="custom-date ml-4">
+                <input type="date" id="start-date" class="p-2 border border-gray-300 rounded">
+                <input type="date" id="end-date" class="p-2 border border-gray-300 rounded">
+                <button id="apply-filter" class="p-2 bg-blue-500 text-white rounded">Apply</button>
+            </div>
         </div>
 
-        <div class="chart-row mb-4">
+        <div class="chart-row">
             <div class="chart-container">
                 <div class="chart-title">Product Category Distribution</div>
                 <canvas id="categoryChart"></canvas>
@@ -55,11 +63,17 @@
                 <canvas id="transactionChart"></canvas>
             </div>
         </div>
+        <div class="chart-row">
+            <div class="chart-container">
+                <div class="chart-title">Net Price vs Selling Price</div>
+                <canvas id="priceChart"></canvas>
+            </div>
+        </div>
     </div>
 
     <script>
         const chartData = {{ chart_data | tojson | safe }};
-        let categoryChart, topProductChart, leastProductChart, transactionChart;
+        let categoryChart, topProductChart, leastProductChart, transactionChart, priceChart;
 
         function initializeCharts(data) {
             // Destroy existing charts if they exist
@@ -67,6 +81,7 @@
             if (topProductChart) topProductChart.destroy();
             if (leastProductChart) leastProductChart.destroy();
             if (transactionChart) transactionChart.destroy();
+            if (priceChart) priceChart.destroy();
 
             // Initialize new charts with updated data
             categoryChart = new Chart(document.getElementById('categoryChart'), {
@@ -75,7 +90,9 @@
                     labels: data.category_names,
                     datasets: [{
                         data: data.category_data,
-                        backgroundColor: ['rgba(255, 99, 132, 0.5)', 'rgba(54, 162, 235, 0.5)', 'rgba(255, 206, 86, 0.5)', 'rgba(75, 192, 192, 0.5)', 'rgba(153, 102, 255, 0.5)', 'rgba(255, 159, 64, 0.5)'],
+                        backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)', 'rgba(255, 159, 64, 0.2)'],
+                        borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)', 'rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)'],
+                        borderWidth: 1
                     }]
                 }
             });
@@ -87,7 +104,9 @@
                     datasets: [{
                         label: 'Quantity Sold',
                         data: data.top_product_data,
-                        backgroundColor: ['rgba(255, 99, 132, 0.5)', 'rgba(54, 162, 235, 0.5)', 'rgba(255, 206, 86, 0.5)', 'rgba(75, 192, 192, 0.5)', 'rgba(153, 102, 255, 0.5)'],
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
                     }]
                 },
                 options: {
@@ -106,7 +125,9 @@
                     datasets: [{
                         label: 'Quantity Sold',
                         data: data.least_product_data,
-                        backgroundColor: ['rgba(255, 99, 132, 0.5)', 'rgba(54, 162, 235, 0.5)', 'rgba(255, 206, 86, 0.5)', 'rgba(75, 192, 192, 0.5)', 'rgba(153, 102, 255, 0.5)'],
+                        backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 1
                     }]
                 },
                 options: {
@@ -125,9 +146,40 @@
                     datasets: [{
                         label: 'Total Price',
                         data: data.transaction_data.total_prices,
-                        borderColor: 'rgba(255, 99, 132, 0.5)',
-                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                        fill: false
+                        borderColor: 'rgba(255, 99, 132, 0.2)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        fill: true,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            priceChart = new Chart(document.getElementById('priceChart'), {
+                type: 'line',
+                data: {
+                    labels: data.price_data.labels,
+                    datasets: [{
+                        label: 'Net Price',
+                        data: data.price_data.net_prices,
+                        borderColor: 'rgba(54, 162, 235, 0.2)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        fill: true,
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Selling Price',
+                        data: data.price_data.selling_prices,
+                        borderColor: 'rgba(75, 192, 192, 0.2)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        fill: true,
+                        borderWidth: 1
                     }]
                 },
                 options: {
@@ -142,17 +194,40 @@
 
         document.getElementById('filter-select').addEventListener('change', function() {
             const filter = this.value;
-            fetch(`/dashboard_data?filter=${filter}`)
+            if (filter === 'custom') {
+                document.querySelector('.custom-date').style.display = 'block';
+            } else {
+                document.querySelector('.custom-date').style.display = 'none';
+                fetch(`/dashboard_data?filter=${filter}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        initializeCharts(data);
+                    })
+                    .catch(error => console.error('Error fetching data:', error));
+            }
+        });
+
+        document.getElementById('apply-filter').addEventListener('click', function() {
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+            if (startDate && endDate) {
+                fetch(`/dashboard_data?filter=custom&start_date=${startDate}&end_date=${endDate}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        initializeCharts(data);
+                    })
+                    .catch(error => console.error('Error fetching data:', error));
+            }
+        });
+
+        // Initialize charts on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch(`/dashboard_data?filter=today`)
                 .then(response => response.json())
                 .then(data => {
                     initializeCharts(data);
                 })
                 .catch(error => console.error('Error fetching data:', error));
-        });
-
-        // Initialize charts on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeCharts(chartData);
         });
     </script>
 </body>

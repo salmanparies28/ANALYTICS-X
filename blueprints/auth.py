@@ -61,6 +61,13 @@ def login():
             flash('Invalid email or password!', 'danger')
     return render_template('login.html')
 
+@auth_bp.route('/logout')
+def logout():
+    # Clear session data
+    session.clear()
+    # Redirect to home page
+    return redirect(url_for('index'))
+
 @auth_bp.route('/home')
 def home():
     if 'user_id' in session:
