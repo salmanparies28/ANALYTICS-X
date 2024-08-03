@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Product</title>
+</head>
+<body>
+    <h1>Edit Product</h1>
+    <form action="{{ url_for('product.update_product', product_id=product.id) }}" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="_method" value="PUT">
+        
+        <label for="name">Product Name:</label><br>
+        <input type="text" id="name" name="name" value="{{ product.name }}"><br>
+        
+        <label for="SKU">SKU:</label><br>
+        <input type="text" id="SKU" name="SKU" value="{{ product.SKU }}"><br>
+        
+        <label for="category_id">Category ID:</label><br>
+        <input type="text" id="category_id" name="category_id" value="{{ product.category_id }}"><br>
+        
+        <label for="image">Current Image:</label><br>
+        {% if product.image %}
+            <img src="{{ url_for('static', filename='uploads/' ~ product.image) }}" alt="Product Image" style="max-width: 200px;"><br>
+        {% else %}
+            No Image<br>
+        {% endif %}
+        <label for="new_image">Upload New Image (optional):</label><br>
+        <input type="file" id="new_image" name="new_image"><br>
+        
+        <label for="net_price">Net Price:</label><br>
+        <input type="text" id="net_price" name="net_price" value="{{ product.net_price }}"><br>
+        
+        <label for="selling_price">Selling Price:</label><br>
+        <input type="text" id="selling_price" name="selling_price" value="{{ product.selling_price }}"><br>
+        
+        <label for="quantity">Quantity:</label><br>
+        <input type="text" id="quantity" name="quantity" value="{{ product.quantity }}"><br>
+        
+        <label for="seller">Seller name:</label><br>
+        <input type="text" id="seller" name="seller" value="{{ product.seller }}"><br>
+        
+        <input type="submit" value="Update Product">
+    </form>
+    <br>
+    <a href="{{ url_for('product.view_products') }}">Back to Products</a>
+</body>
+</html>

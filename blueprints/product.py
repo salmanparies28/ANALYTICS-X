@@ -61,6 +61,7 @@ def view_products():
     products = Product.query.all()
     return render_template('view_products.html', products=products)
 
+
 @product_bp.route('/edit_product/<int:product_id>', methods=['GET'])
 def edit_product(product_id):
     product = Product.query.get_or_404(product_id)
