@@ -3,16 +3,82 @@
 <head>
   <meta charset="UTF-8">
   <title>Create Bill</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    .product-row {
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
 <body>
-  <form action="/create_bill" method="post">
-    <label for="customer_id">Customer ID:</label><br>
-    <input type="text" id="customer_id" name="customer_id"><br>
-    <label for="product_id">Product ID:</label><br>
-    <input type="text" id="product_id" name="product_id"><br>
-    <label for="quantity">Quantity:</label><br>
-    <input type="text" id="quantity" name="quantity"><br>
+  <form id="create-bill-form" action="/create_bill" method="post">
+    <div>
+      <label for="customer_search">Customer:</label>
+      <input type="text" id="customer_search" placeholder="Search by name or phone">
+      <select id="customer_id" name="customer_id">
+        <!-- Customer options will be loaded here -->
+      </select>
+    </div>
+    <div id="products-container">
+      <div class="product-row" id="product-row-0">
+        <label for="product_search_0">Product:</label>
+        <input type="text" id="product_search_0" class="product_search" placeholder="Search by name or SKU">
+        <select id="product_id_0" name="product_id[]">
+          <!-- Product options will be loaded here -->
+        </select>
+        <label for="quantity_0">Quantity:</label>
+        <input type="number" id="quantity_0" name="quantity[]" value="1" min="1">
+      </div>
+    </div>
+    <button type="button" id="add-product">Add Another Product</button><br><br>
     <input type="submit" value="Create Bill">
   </form>
+
+  <script>
+    let productIndex = 1;
+
+    $(document).ready(function() {
+      $('#customer_search').on('input', function() {
+        searchCustomers($(this).val());
+      });
+
+      $(document).on('input', '.product_search', function() {
+        let index = $(this).attr('id').split('_')[2];
+        searchProducts($(this).val(), index);
+      });
+
+      $('#add-product').click(function() {
+        addProductRow();
+      });
+    });
+
+    function searchCustomers(query) {
+      $.get('/api/customers', {q: query}, function(data) {
+        let options = data.customers.map(customer => `<option value="${customer.id}">${customer.name} - ${customer.phone}</option>`);
+        $('#customer_id').html(options.join(''));
+      });
+    }
+
+    function searchProducts(query, index) {
+      $.get('/api/products', {q: query}, function(data) {
+        let options = data.products.map(product => `<option value="${product.id}">${product.name} - ${product.SKU}</option>`);
+        $(`#product_id_${index}`).html(options.join(''));
+      });
+    }
+
+    function addProductRow() {
+      let productRow = `<div class="product-row" id="product-row-${productIndex}">
+        <label for="product_search_${productIndex}">Product:</label>
+        <input type="text" id="product_search_${productIndex}" class="product_search" placeholder="Search by name or SKU">
+        <select id="product_id_${productIndex}" name="product_id[]">
+          <!-- Product options will be loaded here -->
+        </select>
+        <label for="quantity_${productIndex}">Quantity:</label>
+        <input type="number" id="quantity_${productIndex}" name="quantity[]" value="1" min="1">
+      </div>`;
+      $('#products-container').append(productRow);
+      productIndex++;
+    }
+  </script>
 </body>
 </html>

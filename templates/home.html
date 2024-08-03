@@ -83,6 +83,18 @@
           </a>
         </li>
         <li>
+          <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/create_bill', this)">
+            <i class="fas fa-file-invoice w-6 h-6 text-gray-500"></i>
+            <span class="ml-3">Create Bill</span>
+          </a>
+        </li>
+        <li>
+          <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/view_bills', this)">
+            <i class="fas fa-file-alt w-6 h-6 text-gray-500"></i>
+            <span class="ml-3">View Bills</span>
+          </a>
+        </li>
+        <li>
           <button class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="toggleDropdown('product-dropdown')">
             <i class="fas fa-box-open w-6 h-6 text-gray-500"></i>
             <span class="ml-3 pr-24">Products</span>
@@ -99,27 +111,6 @@
               <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/view_products', this)">
                 <i class="fas fa-boxes w-6 h-6 text-gray-500"></i>
                 <span class="ml-3">View Products</span>
-              </a>
-            </li>
-          </ul>
-        </li>
-        <li>
-          <button class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="toggleDropdown('category-dropdown')">
-            <i class="fas fa-list w-6 h-6 text-gray-500"></i>
-            <span class="ml-3 pr-20">Categories</span>
-            <i class="fas fa-chevron-down ml-auto"></i>
-          </button>
-          <ul id="category-dropdown" class="hidden ml-6 space-y-2">
-            <li>
-              <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/add_category', this)">
-                <i class="fas fa-plus-circle w-6 h-6 text-gray-500"></i>
-                <span class="ml-3">Add Category</span>
-              </a>
-            </li>
-            <li>
-              <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/view_categories', this)">
-                <i class="fas fa-list w-6 h-6 text-gray-500"></i>
-                <span class="ml-3">View Categories</span>
               </a>
             </li>
           </ul>
@@ -146,6 +137,27 @@
           </ul>
         </li>
         <li>
+          <button class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="toggleDropdown('category-dropdown')">
+            <i class="fas fa-list w-6 h-6 text-gray-500"></i>
+            <span class="ml-3 pr-20">Categories</span>
+            <i class="fas fa-chevron-down ml-auto"></i>
+          </button>
+          <ul id="category-dropdown" class="hidden ml-6 space-y-2">
+            <li>
+              <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/add_category', this)">
+                <i class="fas fa-plus-circle w-6 h-6 text-gray-500"></i>
+                <span class="ml-3">Add Category</span>
+              </a>
+            </li>
+            <li>
+              <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/view_categories', this)">
+                <i class="fas fa-list w-6 h-6 text-gray-500"></i>
+                <span class="ml-3">View Categories</span>
+              </a>
+            </li>
+          </ul>
+        </li>
+        <li>
           <button class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="toggleDropdown('inventory-dropdown')">
             <i class="fas fa-warehouse w-6 h-6 text-gray-500"></i>
             <span class="ml-3 pr-20">Inventory</span>
@@ -153,26 +165,26 @@
           </button>
           <ul id="inventory-dropdown" class="hidden ml-6 space-y-2">
             <li>
+              <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/inventory', this)">
+                <i class="fas fa-warehouse w-6 h-6 text-gray-500"></i>
+                <span class="ml-3">View Inventory</span>
+              </a>
+            </li>
+            <li>
               <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/restock_product', this)">
                 <i class="fas fa-edit w-6 h-6 text-gray-500"></i>
-                <span class="ml-3">Edit Stocks</span>
+                <span class="ml-3">Restock Products</span>
               </a>
             </li>
           </ul>
         </li>
-        <li>
-          <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/create_bill', this)">
-            <i class="fas fa-file-invoice w-6 h-6 text-gray-500"></i>
-            <span class="ml-3">Create Bill</span>
-          </a>
-        </li>
-        <li>
-          <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/view_bills', this)">
-            <i class="fas fa-file-alt w-6 h-6 text-gray-500"></i>
-            <span class="ml-3">View Bills</span>
-          </a>
-        </li>
       </ul>
+      <div class="absolute bottom-0 w-full">
+        <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/settings', this)">
+          <i class="fas fa-cog w-6 h-6 text-gray-500"></i>
+          <span class="ml-3">Settings</span>
+        </a>
+      </div>
     </div>
   </aside>
 
