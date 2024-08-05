@@ -1,8 +1,14 @@
 from flask import Blueprint, request, render_template, redirect, url_for, jsonify
-from models import db, TransactionRecord, Product, Inventory, Customer
+from models import db, TransactionRecord, TransactionItem, Product, Inventory, Customer
 from datetime import datetime
 
 billing_bp = Blueprint('billing', __name__)
+
+def generate_bill_number():
+    last_bill = TransactionRecord.query.order_by(TransactionRecord.id.desc()).first()
+    if last_bill:
+        return last_bill.bill_no + 1
+    return 1
 
 @billing_bp.route('/create_bill', methods=['GET', 'POST'])
 def create_bill():
@@ -32,6 +38,7 @@ def create_bill():
                 items.append((product_id, quantity, product.selling_price * quantity))
 
             new_bill = TransactionRecord(
+                bill_no=generate_bill_number(),
                 customer_id=customer_id,
                 date=date,
                 total_price=total_price
@@ -40,10 +47,9 @@ def create_bill():
             db.session.commit()
 
             for product_id, quantity, item_total_price in items:
-                db.session.add(TransactionRecord(
-                    customer_id=customer_id,
+                db.session.add(TransactionItem(
+                    transaction_id=new_bill.id,
                     product_id=product_id,
-                    date=date,
                     quantity=quantity,
                     total_price=item_total_price
                 ))
@@ -59,9 +65,16 @@ def create_bill():
 def view_bills():
     bills = db.session.query(
         TransactionRecord,
-        Product.SKU
-    ).join(Product, TransactionRecord.product_id == Product.id).all()
-    return render_template('view_bills.html', bills=bills)
+        Customer.name.label('customer_name')
+    ).join(Customer, TransactionRecord.customer_id == Customer.id).all()
+    
+    bill_items = db.session.query(
+        TransactionItem,
+        Product.name.label('product_name'),
+        Product.SKU.label('product_sku')
+    ).join(Product, TransactionItem.product_id == Product.id).all()
+    
+    return render_template('view_bills.html', bills=bills, bill_items=bill_items)
 
 @billing_bp.route('/api/customers')
 def api_customers():

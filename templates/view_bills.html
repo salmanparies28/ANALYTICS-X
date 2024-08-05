@@ -1,44 +1,30 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>View Bills</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-    </style>
 </head>
 <body>
-    <h1>View Bills</h1>
-    <table>
-        <tr>
-            <th>Shop ID</th>
-            <th>Customer ID</th>
-            <th>Product ID</th>
-            <th>SKU Code</th>
-            <th>Date</th>
-            <th>Quantity</th>
-            <th>Total Price</th>
-        </tr>
-        {% for bill, sku in bills %}
-        <tr>
-            <td>{{ bill.shop_id }}</td>
-            <td>{{ bill.customer_id }}</td>
-            <td>{{ bill.product_id }}</td>
-            <td>{{ sku }}</td>
-            <td>{{ bill.date }}</td>
-            <td>{{ bill.quantity }}</td>
-            <td>{{ bill.total_price }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+    <h1>Bill List</h1>
+    {% for bill in bills %}
+        <div>
+            <h2>Bill No: {{ bill.TransactionRecord.bill_no }}</h2>
+            <p>Date: {{ bill.TransactionRecord.date }}</p>
+            <p>Customer: {{ bill.customer_name }}</p>
+            <p>Total Price: {{ bill.TransactionRecord.total_price }}</p>
+            <h3>Items:</h3>
+            <ul>
+                {% for item in bill_items %}
+                    {% if item.TransactionItem.transaction_id == bill.TransactionRecord.id %}
+                        <li>
+                            {{ item.product_name }} (SKU: {{ item.product_sku }}) - 
+                            Quantity: {{ item.TransactionItem.quantity }} - 
+                            Total: {{ item.TransactionItem.total_price }}
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
 </body>
 </html>

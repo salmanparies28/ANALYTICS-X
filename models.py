@@ -42,9 +42,16 @@ class Seller(db.Model):
 
 class TransactionRecord(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    bill_no = db.Column(db.Integer, unique=True, nullable=False)
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
+    date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
+    total_price = db.Column(db.Float, nullable=False)
+    items = db.relationship('TransactionItem', backref='transaction', lazy=True)
+
+class TransactionItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    transaction_id = db.Column(db.Integer, db.ForeignKey('transaction_record.id'), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
-    date = db.Column(db.Date, nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     total_price = db.Column(db.Float, nullable=False)
 

@@ -6,6 +6,7 @@
   <title>Home - Analytics X</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js" integrity="sha512-L0Shl7nXXzIlBSUUPpxrokqq4ojqgZFQczTYlGjzONGTDAcLremjwaWv5A+EDLnxhQzY5xUZPWLOLqYRkY0Cbw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script>
     function loadContent(url, element) {
@@ -26,8 +27,31 @@
     }
 
     function toggleDropdown(id) {
+      closeOtherDropdowns(id);
       const dropdown = document.getElementById(id);
-      dropdown.classList.toggle('hidden');
+      if (dropdown.classList.contains('hidden')) {
+        dropdown.classList.remove('hidden', 'animate__animated', 'animate__fadeOut');
+        dropdown.classList.add('animate__animated', 'animate__fadeIn');
+      } else {
+        dropdown.classList.remove('animate__animated', 'animate__fadeIn');
+        dropdown.classList.add('animate__animated', 'animate__fadeOut');
+        setTimeout(() => {
+          dropdown.classList.add('hidden');
+        }, 500); // Adjust the timeout to match the animation duration
+      }
+    }
+
+    function closeOtherDropdowns(exceptId) {
+      const dropdowns = document.querySelectorAll('.dropdown');
+      dropdowns.forEach(dropdown => {
+        if (dropdown.id !== exceptId) {
+          dropdown.classList.remove('animate__animated', 'animate__fadeIn');
+          dropdown.classList.add('animate__animated', 'animate__fadeOut');
+          setTimeout(() => {
+            dropdown.classList.add('hidden');
+          }, 500); // Adjust the timeout to match the animation duration
+        }
+      });
     }
 
     function logout() {
@@ -100,7 +124,7 @@
             <span class="ml-3 pr-24">Products</span>
             <i class="fas fa-chevron-down ml-auto"></i>
           </button>
-          <ul id="product-dropdown" class="hidden ml-6 space-y-2">
+          <ul id="product-dropdown" class="hidden ml-6 space-y-2 dropdown">
             <li>
               <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/add_product', this)">
                 <i class="fas fa-plus-circle w-6 h-6 text-gray-500"></i>
@@ -121,7 +145,7 @@
             <span class="ml-3 pr-20">Customers</span>
             <i class="fas fa-chevron-down ml-auto"></i>
           </button>
-          <ul id="customer-dropdown" class="hidden ml-6 space-y-2">
+          <ul id="customer-dropdown" class="hidden ml-6 space-y-2 dropdown">
             <li>
               <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/add_customer', this)">
                 <i class="fas fa-user-plus w-6 h-6 text-gray-500"></i>
@@ -142,7 +166,7 @@
             <span class="ml-3 pr-20">Categories</span>
             <i class="fas fa-chevron-down ml-auto"></i>
           </button>
-          <ul id="category-dropdown" class="hidden ml-6 space-y-2">
+          <ul id="category-dropdown" class="hidden ml-6 space-y-2 dropdown">
             <li>
               <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/add_category', this)">
                 <i class="fas fa-plus-circle w-6 h-6 text-gray-500"></i>
@@ -163,7 +187,7 @@
             <span class="ml-3 pr-20">Inventory</span>
             <i class="fas fa-chevron-down ml-auto"></i>
           </button>
-          <ul id="inventory-dropdown" class="hidden ml-6 space-y-2">
+          <ul id="inventory-dropdown" class="hidden ml-6 space-y-2 dropdown">
             <li>
               <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/inventory', this)">
                 <i class="fas fa-warehouse w-6 h-6 text-gray-500"></i>
