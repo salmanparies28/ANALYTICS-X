@@ -137,25 +137,11 @@
           </ul>
         </li>
         <li>
-          <button class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="toggleDropdown('category-dropdown')">
+          <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/view_categories', this)">
             <i class="fas fa-list w-6 h-6 text-gray-500"></i>
-            <span class="ml-3 pr-20">Categories</span>
-            <i class="fas fa-chevron-down ml-auto"></i>
-          </button>
-          <ul id="category-dropdown" class="hidden ml-6 space-y-2">
-            <li>
-              <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/add_category', this)">
-                <i class="fas fa-plus-circle w-6 h-6 text-gray-500"></i>
-                <span class="ml-3">Add Category</span>
-              </a>
-            </li>
-            <li>
-              <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/view_categories', this)">
-                <i class="fas fa-list w-6 h-6 text-gray-500"></i>
-                <span class="ml-3">View Categories</span>
-              </a>
-            </li>
-          </ul>
+            <span class="ml-3">Categories</span>
+          </a>
+        </li>
         </li>
         <li>
           <button class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="toggleDropdown('inventory-dropdown')">
