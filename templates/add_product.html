@@ -1,27 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Add Product</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.5.4/flowbite.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-    <form action="/add_product" method="post" enctype="multipart/form-data">
-        <label for="name">Product Name:</label><br>
-        <input type="text" id="name" name="name"><br>
-        <label for="SKU">SKU:</label><br>
-        <input type="text" id="SKU" name="SKU"><br>
-        <label for="category_id">Category ID:</label><br>
-        <input type="text" id="category_id" name="category_id"><br>
-        <label for="image">Image:</label><br>
-        <input type="file" id="image" name="image"><br>
-        <label for="net_price">Net Price:</label><br>
-        <input type="text" id="net_price" name="net_price"><br>
-        <label for="selling_price">Selling Price:</label><br>
-        <input type="text" id="selling_price" name="selling_price"><br>
-        <label for="quantity">Quantity:</label><br>
-        <input type="text" id="quantity" name="quantity"><br>
-        <label for="seller">Seller name:</label><br>
-        <input type="text" id="seller" name="seller"><br>
-        <input type="submit" value="Add Product">
-    </form>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold text-indigo-600 mb-6">Add New Product</h1>
+        <form action="/add_product" method="post" enctype="multipart/form-data" class="bg-white p-6 rounded-lg shadow-md">
+            <div class="mb-4">
+                <label for="name" class="block text-gray-700 font-bold mb-2">Product Name:</label>
+                <input type="text" id="name" name="name" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600">
+            </div>
+            <div class="mb-4">
+                <label for="SKU" class="block text-gray-700 font-bold mb-2">SKU:</label>
+                <input type="text" id="SKU" name="SKU" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600">
+            </div>
+            <div class="mb-4">
+                <label for="image" class="block text-gray-700 font-bold mb-2">Image:</label>
+                <input type="file" id="image" name="image" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600">
+            </div>
+            <div class="mb-4">
+                <label for="net_price" class="block text-gray-700 font-bold mb-2">Net Price:</label>
+                <input type="text" id="net_price" name="net_price" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600">
+            </div>
+            <div class="mb-4">
+                <label for="selling_price" class="block text-gray-700 font-bold mb-2">Selling Price:</label>
+                <input type="text" id="selling_price" name="selling_price" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600">
+            </div>
+            <div class="mb-4">
+                <label for="quantity" class="block text-gray-700 font-bold mb-2">Quantity:</label>
+                <input type="text" id="quantity" name="quantity" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600">
+            </div>
+            <div class="mb-4">
+                <label for="seller" class="block text-gray-700 font-bold mb-2">Seller Name:</label>
+                <input type="text" id="seller" name="seller" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600">
+            </div>
+            <div class="mb-4">
+                <label for="category_id" class="block text-gray-700 font-bold mb-2">Category:</label>
+                <select id="category_id" name="category_id" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600">
+                    <option value="">Select Category</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="flex justify-end">
+                <input type="submit" value="Add Product" class="bg-indigo-600 text-white font-bold px-4 py-2 rounded-md hover:bg-indigo-700 cursor-pointer">
+            </div>
+        </form>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.5.4/flowbite.min.js"></script>
 </body>
 </html>

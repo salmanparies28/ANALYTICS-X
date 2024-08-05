@@ -3,49 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <title>View Customers</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.5.4/flowbite.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>Customers</h1>
-    <a href="{{ url_for('customer.add_customer') }}">Add New Customer</a>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Phone</th>
-                <th>Address</th>
-                <th>Email</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for customer in customers %}
-            <tr>
-                <td>{{ customer.id }}</td>
-                <td>{{ customer.name }}</td>
-                <td>{{ customer.phone }}</td>
-                <td>
-                    {{ customer.city }}{% if customer.city %},{% endif %}
-                    {{ customer.district }}{% if customer.district %},{% endif %}
-                    {{ customer.state }}{% if customer.state %},{% endif %}
-                    {{ customer.pincode }}
-                </td>
-                <td>{{ customer.email }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold text-indigo-600 mb-6">Customers</h1>
+        <a href="{{ url_for('customer.add_customer') }}" class="inline-block bg-indigo-600 text-white px-4 py-2 mb-6 rounded-md hover:bg-indigo-700">Add New Customer</a>
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border border-gray-200">
+                <thead>
+                    <tr>
+                        <th class="py-2 px-4 border-b bg-indigo-100 text-left">ID</th>
+                        <th class="py-2 px-4 border-b bg-indigo-100 text-left">Name</th>
+                        <th class="py-2 px-4 border-b bg-indigo-100 text-left">Phone</th>
+                        <th class="py-2 px-4 border-b bg-indigo-100 text-left">Address</th>
+                        <th class="py-2 px-4 border-b bg-indigo-100 text-left">Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customers %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="py-2 px-4 border-b">{{ customer.id }}</td>
+                        <td class="py-2 px-4 border-b">{{ customer.name }}</td>
+                        <td class="py-2 px-4 border-b">{{ customer.phone }}</td>
+                        <td class="py-2 px-4 border-b">
+                            {{ customer.city }}{% if customer.city %},{% endif %}
+                            {{ customer.district }}{% if customer.district %},{% endif %}
+                            {{ customer.state }}{% if customer.state %},{% endif %}
+                            {{ customer.pincode }}
+                        </td>
+                        <td class="py-2 px-4 border-b">{{ customer.email }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.5.4/flowbite.min.js"></script>
 </body>
 </html>

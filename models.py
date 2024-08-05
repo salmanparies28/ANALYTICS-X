@@ -22,12 +22,12 @@ class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     SKU = db.Column(db.String(50), nullable=False)
-    category_id = db.Column(db.Integer, db.ForeignKey('product_category.id'), nullable=False)
     image = db.Column(db.String(200), nullable=True)
     net_price = db.Column(db.Float, nullable=False)
     selling_price = db.Column(db.Float, nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     seller = db.Column(db.String(100), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('product_category.id'), nullable=True)  # Allow null if category not mandatory
     inventory = db.relationship('Inventory', backref='product', lazy=True)
 
     def restock(self, additional_quantity):
@@ -58,11 +58,10 @@ class Customer(db.Model):
     pincode = db.Column(db.String(20), nullable=True)  # Optional field
     email = db.Column(db.String(100), nullable=True)  # Optional field
 
-
 class Inventory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
-    category_id = db.Column(db.Integer, db.ForeignKey('product_category.id'), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('product_category.id'), nullable=True)  # Allow NULL
     quantity = db.Column(db.Integer, nullable=False)
 
     @property
@@ -71,7 +70,7 @@ class Inventory(db.Model):
 
     @property
     def category_name(self):
-        return self.category.name
+        return self.category.name if self.category else "No Category"
 
     def restock(self, additional_quantity):
         self.quantity += additional_quantity

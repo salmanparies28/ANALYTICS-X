@@ -27,15 +27,16 @@ def view_categories():
 
 @product_bp.route('/add_product', methods=['GET', 'POST'])
 def add_product():
+    categories = ProductCategory.query.all()
     if request.method == 'POST':
         name = request.form['name']
         SKU = request.form['SKU']
-        category_id = request.form['category_id']
         image = request.files['image']
         net_price = request.form['net_price']
         selling_price = request.form['selling_price']
         quantity = request.form['quantity']
         seller = request.form['seller']
+        category_id = request.form.get('category_id', None)
 
         if image:
             filename = secure_filename(image.filename)
@@ -45,7 +46,7 @@ def add_product():
         else:
             image_url = None
 
-        new_product = Product(name=name, SKU=SKU, category_id=category_id, image=image_url, net_price=net_price, selling_price=selling_price, quantity=quantity, seller=seller)
+        new_product = Product(name=name, SKU=SKU, image=image_url, net_price=net_price, selling_price=selling_price, quantity=quantity, seller=seller, category_id=category_id)
         db.session.add(new_product)
         db.session.commit()
 
@@ -54,7 +55,9 @@ def add_product():
         db.session.commit()
 
         return redirect(url_for('auth.home'))
-    return render_template('add_product.html')
+    return render_template('add_product.html', categories=categories)
+
+
 
 @product_bp.route('/view_products')
 def view_products():
