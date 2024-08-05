@@ -12,6 +12,10 @@
 </head>
 <body>
   <form id="create-bill-form" action="/create_bill" method="post">
+    <!-- Hidden fields -->
+    <input type="hidden" name="shop_id" value="your_shop_id_value">
+    <input type="hidden" name="date" value="">
+    
     <div>
       <label for="customer_search">Customer:</label>
       <input type="text" id="customer_search" placeholder="Search by name or phone">
@@ -38,6 +42,10 @@
     let productIndex = 1;
 
     $(document).ready(function() {
+      // Set the current date
+      let currentDate = new Date().toISOString().split('T')[0]; // Formats the date as YYYY-MM-DD
+      $('input[name="date"]').val(currentDate);
+
       $('#customer_search').on('input', function() {
         searchCustomers($(this).val());
       });
@@ -82,3 +90,4 @@
   </script>
 </body>
 </html>
+

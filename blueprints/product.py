@@ -13,8 +13,7 @@ if not os.path.exists(UPLOAD_FOLDER):
 def add_category():
     if request.method == 'POST':
         name = request.form['name']
-        user_id = request.form['user_id']
-        new_category = ProductCategory(name=name, user_id=user_id)
+        new_category = ProductCategory(name=name)
         db.session.add(new_category)
         db.session.commit()
         return redirect(url_for('product.view_categories'))
@@ -56,6 +55,7 @@ def add_product():
 
         return redirect(url_for('auth.home'))
     return render_template('add_product.html', categories=categories)
+
 
 
 
