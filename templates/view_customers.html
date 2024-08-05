@@ -1,9 +1,21 @@
-customer details 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>View Customers</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+    </style>
 </head>
 <body>
     <h1>Customers</h1>
@@ -14,6 +26,8 @@ customer details
                 <th>ID</th>
                 <th>Name</th>
                 <th>Phone</th>
+                <th>Address</th>
+                <th>Email</th>
             </tr>
         </thead>
         <tbody>
@@ -22,6 +36,13 @@ customer details
                 <td>{{ customer.id }}</td>
                 <td>{{ customer.name }}</td>
                 <td>{{ customer.phone }}</td>
+                <td>
+                    {{ customer.city }}{% if customer.city %},{% endif %}
+                    {{ customer.district }}{% if customer.district %},{% endif %}
+                    {{ customer.state }}{% if customer.state %},{% endif %}
+                    {{ customer.pincode }}
+                </td>
+                <td>{{ customer.email }}</td>
             </tr>
             {% endfor %}
         </tbody>
