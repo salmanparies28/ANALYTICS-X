@@ -29,7 +29,6 @@ class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     SKU = db.Column(db.String(50), nullable=False)
-    image = db.Column(db.String(200), nullable=True)
     net_price = db.Column(db.Float, nullable=False)
     selling_price = db.Column(db.Float, nullable=False)
     quantity = db.Column(db.Integer, nullable=False)

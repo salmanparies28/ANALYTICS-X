@@ -16,16 +16,7 @@
         
         <label for="category_id">Category ID:</label><br>
         <input type="text" id="category_id" name="category_id" value="{{ product.category_id }}"><br>
-        
-        <label for="image">Current Image:</label><br>
-        {% if product.image %}
-            <img src="{{ url_for('static', filename='uploads/' ~ product.image) }}" alt="Product Image" style="max-width: 200px;"><br>
-        {% else %}
-            No Image<br>
-        {% endif %}
-        <label for="new_image">Upload New Image (optional):</label><br>
-        <input type="file" id="new_image" name="new_image"><br>
-        
+
         <label for="net_price">Net Price:</label><br>
         <input type="text" id="net_price" name="net_price" value="{{ product.net_price }}"><br>
         

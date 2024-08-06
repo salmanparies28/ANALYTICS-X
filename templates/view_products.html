@@ -14,7 +14,6 @@
             <table class="min-w-full bg-white border border-gray-200">
                 <thead>
                     <tr>
-                        <th class="py-2 px-4 border-b bg-indigo-100 text-left">Product Image</th>
                         <th class="py-2 px-4 border-b bg-indigo-100 text-left">Product Name</th>
                         <th class="py-2 px-4 border-b bg-indigo-100 text-left">SKU</th>
                         <th class="py-2 px-4 border-b bg-indigo-100 text-left">Quantity</th>
@@ -24,14 +23,6 @@
                 </thead>
                 <tbody>
                     {% for product in products %}
-                    <tr class="hover:bg-gray-50">
-                        <td class="py-2 px-4 border-b">
-                            {% if product.image %}
-                            <img src="{{ url_for('static', filename='uploads/' ~ product.image) }}" alt="Product Image" class="max-w-xs">
-                            {% else %}
-                            No Image
-                            {% endif %}
-                        </td>
                         <td class="py-2 px-4 border-b">{{ product.name }}</td>
                         <td class="py-2 px-4 border-b">{{ product.SKU }}</td>
                         <td class="py-2 px-4 border-b">{{ product.quantity }}</td>

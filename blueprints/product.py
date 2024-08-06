@@ -45,22 +45,13 @@ def add_product():
     if request.method == 'POST':
         name = request.form['name']
         SKU = request.form['SKU']
-        image = request.files['image']
         net_price = request.form['net_price']
         selling_price = request.form['selling_price']
         quantity = request.form['quantity']
         seller = request.form['seller']
         category_id = request.form.get('category_id', None)
 
-        if image:
-            filename = secure_filename(image.filename)
-            image_path = os.path.join(UPLOAD_FOLDER, filename)
-            image.save(image_path)
-            image_url = os.path.join('uploads', filename)
-        else:
-            image_url = None
-
-        new_product = Product(name=name, SKU=SKU, image=image_url, net_price=net_price, selling_price=selling_price, quantity=quantity, seller=seller, category_id=category_id, organisation_id=organisation_id)
+        new_product = Product(name=name, SKU=SKU, net_price=net_price, selling_price=selling_price, quantity=quantity, seller=seller, category_id=category_id, organisation_id=organisation_id)
         db.session.add(new_product)
         db.session.commit()
 
@@ -103,13 +94,6 @@ def update_product(product_id):
     product.selling_price = request.form['selling_price']
     product.quantity = request.form['quantity']
     product.seller = request.form['seller']
-
-    new_image = request.files.get('new_image')
-    if new_image:
-        filename = secure_filename(new_image.filename)
-        image_path = os.path.join(UPLOAD_FOLDER, filename)
-        new_image.save(image_path)
-        product.image = os.path.join('uploads', filename)
 
     db.session.commit()
     return redirect(url_for('product.view_products'))
