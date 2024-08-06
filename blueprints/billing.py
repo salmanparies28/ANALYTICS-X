@@ -14,10 +14,18 @@ def generate_bill_number():
 def create_bill():
     if request.method == 'POST':
         try:
-            customer_id = request.form['customer_id']
+            customer_id = request.form.get('customer_id')
             product_ids = request.form.getlist('product_id[]')
             quantities = request.form.getlist('quantity[]')
             date = datetime.now().date()
+
+            # Check for missing form fields
+            if not customer_id:
+                return "Missing customer_id form field", 400
+            if not product_ids:
+                return "Missing product_id form field", 400
+            if not quantities:
+                return "Missing quantity form field", 400
 
             total_price = 0
             items = []
@@ -28,7 +36,7 @@ def create_bill():
                 inventory = Inventory.query.filter_by(product_id=product_id).first()
 
                 if product is None or inventory is None:
-                    return "Invalid product or inventory ID.", 400
+                    return f"Invalid product or inventory ID: {product_id}", 400
 
                 if inventory.quantity < quantity:
                     return f"Not enough inventory available for product ID: {product_id}", 400
@@ -56,8 +64,8 @@ def create_bill():
 
             db.session.commit()
             return redirect(url_for('billing.view_bills'))
-        except KeyError as e:
-            return f"Missing form field: {e}", 400
+        except Exception as e:
+            return f"Error: {str(e)}", 400
 
     return render_template('create_bill.html')
 
@@ -79,17 +87,15 @@ def view_bills():
 @billing_bp.route('/api/customers')
 def api_customers():
     query = request.args.get('q')
-    if query:
-        customers = Customer.query.filter((Customer.name.ilike(f'%{query}%')) | (Customer.phone.ilike(f'%{query}%'))).all()
-    else:
-        customers = Customer.query.all()
-    return jsonify(customers=[{"id": customer.id, "name": customer.name, "phone": customer.phone} for customer in customers])
+    customer = Customer.query.filter_by(phone=query).first()
+    if customer:
+        return jsonify({"id": customer.id, "name": customer.name, "phone": customer.phone})
+    return jsonify({"error": "Customer not found"})
 
 @billing_bp.route('/api/products')
 def api_products():
     query = request.args.get('q')
-    if query:
-        products = Product.query.filter((Product.name.ilike(f'%{query}%')) | (Product.SKU.ilike(f'%{query}%'))).all()
-    else:
-        products = Product.query.all()
-    return jsonify(products=[{"id": product.id, "name": product.name, "SKU": product.SKU} for product in products])
+    product = Product.query.filter((Product.name.ilike(f'%{query}%')) | (Product.SKU.ilike(f'%{query}%'))).first()
+    if product:
+        return jsonify({"id": product.id, "name": product.name, "SKU": product.SKU, "price": product.selling_price})
+    return jsonify({"error": "Product not found"})

@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, jsonify
 import pandas as pd
 from app import db
-from models import Product, TransactionRecord, ProductCategory
+from models import Product, TransactionRecord, TransactionItem, ProductCategory
 from datetime import datetime, timedelta
 
 dashboard_bp = Blueprint('dashboard', __name__)
@@ -52,8 +52,8 @@ def get_chart_data(start_date, end_date):
     # Fetch and process data for top 5 selling products
     top_products = db.session.query(
         Product.name,
-        db.func.sum(TransactionRecord.quantity).label('total_quantity')
-    ).join(TransactionRecord).filter(
+        db.func.sum(TransactionItem.quantity).label('total_quantity')
+    ).select_from(TransactionItem).join(Product, TransactionItem.product_id == Product.id).join(TransactionRecord, TransactionItem.transaction_id == TransactionRecord.id).filter(
         TransactionRecord.date.between(start_date, end_date)
     ).group_by(
         Product.id
@@ -66,8 +66,8 @@ def get_chart_data(start_date, end_date):
     # Fetch and process data for least 5 selling products
     least_products = db.session.query(
         Product.name,
-        db.func.sum(TransactionRecord.quantity).label('total_quantity')
-    ).join(TransactionRecord).filter(
+        db.func.sum(TransactionItem.quantity).label('total_quantity')
+    ).select_from(TransactionItem).join(Product, TransactionItem.product_id == Product.id).join(TransactionRecord, TransactionItem.transaction_id == TransactionRecord.id).filter(
         TransactionRecord.date.between(start_date, end_date)
     ).group_by(
         Product.id
@@ -89,9 +89,9 @@ def get_chart_data(start_date, end_date):
     # Fetch and process data for net price and selling price
     price_data = db.session.query(
         TransactionRecord.date,
-        db.func.sum(Product.net_price * TransactionRecord.quantity).label('total_net_price'),
-        db.func.sum(Product.selling_price * TransactionRecord.quantity).label('total_selling_price')
-    ).join(Product).filter(
+        db.func.sum(Product.net_price * TransactionItem.quantity).label('total_net_price'),
+        db.func.sum(Product.selling_price * TransactionItem.quantity).label('total_selling_price')
+    ).select_from(TransactionItem).join(Product, TransactionItem.product_id == Product.id).join(TransactionRecord, TransactionItem.transaction_id == TransactionRecord.id).filter(
         TransactionRecord.date.between(start_date, end_date)
     ).group_by(
         TransactionRecord.date

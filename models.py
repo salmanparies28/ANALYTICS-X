@@ -11,10 +11,17 @@ class Organisation(db.Model):
     company_size = db.Column(db.String(50), nullable=False)
     subscription_type = db.Column(db.String(50), nullable=False)
     end_date = db.Column(db.Date, nullable=False)
+    product_categories = db.relationship('ProductCategory', backref='organisation', lazy=True)
+    products = db.relationship('Product', backref='organisation', lazy=True)
+    sellers = db.relationship('Seller', backref='organisation', lazy=True)
+    transaction_records = db.relationship('TransactionRecord', backref='organisation', lazy=True)
+    customers = db.relationship('Customer', backref='organisation', lazy=True)
+    inventories = db.relationship('Inventory', backref='organisation', lazy=True)
 
 class ProductCategory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
+    organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
     product_list = db.relationship('Product', backref='category', lazy=True)
     inventory_list = db.relationship('Inventory', backref='category', lazy=True)
 
@@ -27,6 +34,7 @@ class Product(db.Model):
     selling_price = db.Column(db.Float, nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     seller = db.Column(db.String(100), nullable=False)
+    organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('product_category.id'), nullable=True)  # Allow null if category not mandatory
     inventory = db.relationship('Inventory', backref='product', lazy=True)
 
@@ -39,6 +47,7 @@ class Seller(db.Model):
     name = db.Column(db.String(100), nullable=False)
     contact = db.Column(db.String(50), nullable=False)
     type = db.Column(db.String(50), nullable=False)
+    organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
 
 class TransactionRecord(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -46,6 +55,7 @@ class TransactionRecord(db.Model):
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
     date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
     total_price = db.Column(db.Float, nullable=False)
+    organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
     items = db.relationship('TransactionItem', backref='transaction', lazy=True)
 
 class TransactionItem(db.Model):
@@ -64,11 +74,13 @@ class Customer(db.Model):
     state = db.Column(db.String(100), nullable=True)  # Optional field
     pincode = db.Column(db.String(20), nullable=True)  # Optional field
     email = db.Column(db.String(100), nullable=True)  # Optional field
+    organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
 
 class Inventory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('product_category.id'), nullable=True)  # Allow NULL
+    organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
 
     @property

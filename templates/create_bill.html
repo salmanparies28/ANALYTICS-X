@@ -12,82 +12,111 @@
 </head>
 <body>
   <form id="create-bill-form" action="/create_bill" method="post">
-    <!-- Hidden fields -->
-    <input type="hidden" name="shop_id" value="your_shop_id_value">
-    <input type="hidden" name="date" value="">
-    
     <div>
-      <label for="customer_search">Customer:</label>
-      <input type="text" id="customer_search" placeholder="Search by name or phone">
-      <select id="customer_id" name="customer_id">
-        <!-- Customer options will be loaded here -->
-      </select>
+      <label for="customer_search">Customer Phone:</label>
+      <input type="text" id="customer_search" placeholder="Enter phone number" required>
+      <span id="customer_info"></span>
+      <input type="hidden" id="customer_id" name="customer_id">
     </div>
     <div id="products-container">
       <div class="product-row" id="product-row-0">
         <label for="product_search_0">Product:</label>
-        <input type="text" id="product_search_0" class="product_search" placeholder="Search by name or SKU">
-        <select id="product_id_0" name="product_id[]">
-          <!-- Product options will be loaded here -->
-        </select>
+        <input type="text" id="product_search_0" class="product_search" placeholder="Search by name or SKU" required>
+        <span id="product_info_0"></span>
+        <input type="hidden" id="product_id_0" name="product_id[]" required>
         <label for="quantity_0">Quantity:</label>
-        <input type="number" id="quantity_0" name="quantity[]" value="1" min="1">
+        <input type="number" id="quantity_0" name="quantity[]" value="1" min="1" required>
       </div>
     </div>
     <button type="button" id="add-product">Add Another Product</button><br><br>
+    <div>
+      <label>Total Amount: </label>
+      <span id="total_amount">0</span>
+    </div>
     <input type="submit" value="Create Bill">
   </form>
 
   <script>
     let productIndex = 1;
+    let totalAmount = 0;
 
     $(document).ready(function() {
-      // Set the current date
-      let currentDate = new Date().toISOString().split('T')[0]; // Formats the date as YYYY-MM-DD
-      $('input[name="date"]').val(currentDate);
-
-      $('#customer_search').on('input', function() {
-        searchCustomers($(this).val());
+      $('#customer_search').on('blur', function() {
+        searchCustomer($(this).val());
       });
 
-      $(document).on('input', '.product_search', function() {
+      $(document).on('blur', '.product_search', function() {
         let index = $(this).attr('id').split('_')[2];
-        searchProducts($(this).val(), index);
+        searchProduct($(this).val(), index);
       });
 
       $('#add-product').click(function() {
         addProductRow();
       });
+
+      $(document).on('change', 'input[name="quantity[]"]', function() {
+        updateTotalAmount();
+      });
+
+      $('#create-bill-form').submit(function() {
+        console.log('Customer ID:', $('#customer_id').val());
+        $('input[name="product_id[]"]').each(function(index) {
+          console.log('Product ID:', $(this).val());
+        });
+        return true; // Allow form submission
+      });
     });
 
-    function searchCustomers(query) {
+    function searchCustomer(query) {
       $.get('/api/customers', {q: query}, function(data) {
-        let options = data.customers.map(customer => `<option value="${customer.id}">${customer.name} - ${customer.phone}</option>`);
-        $('#customer_id').html(options.join(''));
+        if (data.error) {
+          $('#customer_info').text('Customer not found');
+          $('#customer_id').val('');
+        } else {
+          $('#customer_info').text(data.name);
+          $('#customer_id').val(data.id);
+        }
       });
     }
 
-    function searchProducts(query, index) {
+    function searchProduct(query, index) {
       $.get('/api/products', {q: query}, function(data) {
-        let options = data.products.map(product => `<option value="${product.id}">${product.name} - ${product.SKU}</option>`);
-        $(`#product_id_${index}`).html(options.join(''));
+        if (data.error) {
+          $(`#product_info_${index}`).text('Product not found');
+          $(`#product_id_${index}`).val('');
+        } else {
+          $(`#product_info_${index}`).text(`${data.name} - ${data.SKU} - ${data.price}`);
+          $(`#product_id_${index}`).val(data.id);
+          updateTotalAmount();
+        }
       });
     }
 
     function addProductRow() {
       let productRow = `<div class="product-row" id="product-row-${productIndex}">
         <label for="product_search_${productIndex}">Product:</label>
-        <input type="text" id="product_search_${productIndex}" class="product_search" placeholder="Search by name or SKU">
-        <select id="product_id_${productIndex}" name="product_id[]">
-          <!-- Product options will be loaded here -->
-        </select>
+        <input type="text" id="product_search_${productIndex}" class="product_search" placeholder="Search by name or SKU" required>
+        <span id="product_info_${productIndex}"></span>
+        <input type="hidden" id="product_id_${productIndex}" name="product_id[]" required>
         <label for="quantity_${productIndex}">Quantity:</label>
-        <input type="number" id="quantity_${productIndex}" name="quantity[]" value="1" min="1">
+        <input type="number" id="quantity_${productIndex}" name="quantity[]" value="1" min="1" required>
       </div>`;
       $('#products-container').append(productRow);
       productIndex++;
     }
+
+    function updateTotalAmount() {
+      totalAmount = 0;
+      $('input[name="quantity[]"]').each(function(index) {
+        let quantity = $(this).val();
+        let productInfo = $(`#product_info_${index}`).text().split(' - ');
+        if (productInfo.length === 3) {
+          let price = parseFloat(productInfo[2]);
+          totalAmount += price * quantity;
+        }
+      });
+      $('#total_amount').text(totalAmount);
+    }
   </script>
 </body>
 </html>
-
