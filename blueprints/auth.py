@@ -100,3 +100,7 @@ def reset_password():
             flash('Password reset successfully! You can now log in.', 'success')
             return redirect(url_for('auth.login'))
     return render_template('reset_password.html')
+
+
+
+

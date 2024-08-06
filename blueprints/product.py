@@ -21,7 +21,7 @@ def add_category():
         new_category = ProductCategory(name=name, organisation_id=organisation_id)
         db.session.add(new_category)
         db.session.commit()
-        return redirect(url_for('product.add_category'))
+        return redirect(url_for('product.view_categories'))
     return render_template('category.html')
 
 @product_bp.route('/category')
