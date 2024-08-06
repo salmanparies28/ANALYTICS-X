@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, session, flash
 import pandas as pd
 from app import db
 from models import Product, TransactionRecord, TransactionItem, ProductCategory
@@ -8,18 +8,27 @@ dashboard_bp = Blueprint('dashboard', __name__)
 
 @dashboard_bp.route('/dashboard')
 def dashboard():
+    organisation_id = session.get('organisation_id')
+    if not organisation_id:
+        flash('User is not logged in!', 'danger')
+        return redirect(url_for('auth.login'))
+    
     filter_type = request.args.get('filter', 'today')
     start_date, end_date = get_date_range(filter_type)
 
-    chart_data = get_chart_data(start_date, end_date)
+    chart_data = get_chart_data(organisation_id, start_date, end_date)
     return render_template('dashboard.html', chart_data=chart_data, filter_type=filter_type)
 
 @dashboard_bp.route('/dashboard_data')
 def dashboard_data():
+    organisation_id = session.get('organisation_id')
+    if not organisation_id:
+        return jsonify({'error': 'User is not logged in!'}), 403
+
     filter_type = request.args.get('filter', 'today')
     start_date, end_date = get_date_range(filter_type)
 
-    chart_data = get_chart_data(start_date, end_date)
+    chart_data = get_chart_data(organisation_id, start_date, end_date)
     return jsonify(chart_data)
 
 def get_date_range(filter_type):
@@ -43,9 +52,9 @@ def get_date_range(filter_type):
             start_date = end_date
     return start_date, end_date
 
-def get_chart_data(start_date, end_date):
+def get_chart_data(organisation_id, start_date, end_date):
     # Fetch and process data for product categories
-    product_categories = db.session.query(ProductCategory.id, ProductCategory.name, db.func.count(Product.id)).join(Product).group_by(ProductCategory.id).all()
+    product_categories = db.session.query(ProductCategory.id, ProductCategory.name, db.func.count(Product.id)).join(Product).filter(ProductCategory.organisation_id == organisation_id).group_by(ProductCategory.id).all()
     category_data = [count for _, _, count in product_categories]
     category_names = [name for _, name, _ in product_categories]
 
@@ -54,7 +63,8 @@ def get_chart_data(start_date, end_date):
         Product.name,
         db.func.sum(TransactionItem.quantity).label('total_quantity')
     ).select_from(TransactionItem).join(Product, TransactionItem.product_id == Product.id).join(TransactionRecord, TransactionItem.transaction_id == TransactionRecord.id).filter(
-        TransactionRecord.date.between(start_date, end_date)
+        TransactionRecord.date.between(start_date, end_date),
+        Product.organisation_id == organisation_id
     ).group_by(
         Product.id
     ).order_by(
@@ -68,7 +78,8 @@ def get_chart_data(start_date, end_date):
         Product.name,
         db.func.sum(TransactionItem.quantity).label('total_quantity')
     ).select_from(TransactionItem).join(Product, TransactionItem.product_id == Product.id).join(TransactionRecord, TransactionItem.transaction_id == TransactionRecord.id).filter(
-        TransactionRecord.date.between(start_date, end_date)
+        TransactionRecord.date.between(start_date, end_date),
+        Product.organisation_id == organisation_id
     ).group_by(
         Product.id
     ).order_by(
@@ -78,7 +89,7 @@ def get_chart_data(start_date, end_date):
     least_product_names = [name for name, _ in least_products]
 
     # Fetch and process data for transactions
-    transactions = db.session.query(TransactionRecord).filter(TransactionRecord.date.between(start_date, end_date)).all()
+    transactions = db.session.query(TransactionRecord).filter(TransactionRecord.date.between(start_date, end_date), TransactionRecord.organisation_id == organisation_id).all()
     transaction_data = {
         'Date': [transaction.date.strftime('%Y-%m-%d') for transaction in transactions],
         'Total Price': [transaction.total_price for transaction in transactions]
@@ -92,7 +103,8 @@ def get_chart_data(start_date, end_date):
         db.func.sum(Product.net_price * TransactionItem.quantity).label('total_net_price'),
         db.func.sum(Product.selling_price * TransactionItem.quantity).label('total_selling_price')
     ).select_from(TransactionItem).join(Product, TransactionItem.product_id == Product.id).join(TransactionRecord, TransactionItem.transaction_id == TransactionRecord.id).filter(
-        TransactionRecord.date.between(start_date, end_date)
+        TransactionRecord.date.between(start_date, end_date),
+        TransactionRecord.organisation_id == organisation_id
     ).group_by(
         TransactionRecord.date
     ).all()

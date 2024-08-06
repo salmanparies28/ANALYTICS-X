@@ -1,55 +1,48 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>View Categories</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .category-row {
-            background-color: #e6f7ff;
-        }
-    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.5.4/flowbite.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>Categories</h1>
-    <form action="/add_category" method="post">
-        <label for="name">Category Name:</label><br>
-        <input type="text" id="name" name="name" required><br><br>
-        <input type="submit" value="Add Category">
-    </form>
-    <table>
-        <thead>
-            <tr>
-                <th>Category Name</th>
-                <th>Products</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for category in categories %}
-                <tr class="category-row">
-                    <td>{{ category.name }}</td>
-                    <td>
-                        <ul>
-                            {% for product in category.product_list %}
+<body class="bg-gray-100">
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold text-indigo-600 mb-6">Categories</h1>
+        <form action="/add_category" method="post" class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <div class="mb-4">
+                <label for="name" class="block text-gray-700 font-bold mb-2">Category Name:</label>
+                <input type="text" id="name" name="name" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600">
+            </div>
+            <div class="flex justify-end">
+                <input type="submit" value="Add Category" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 cursor-pointer">
+            </div>
+        </form>
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border border-gray-200">
+                <thead>
+                    <tr>
+                        <th class="py-2 px-4 border-b bg-indigo-100 text-left">Category Name</th>
+                        <th class="py-2 px-4 border-b bg-indigo-100 text-left">Products</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for category in categories %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="py-2 px-4 border-b">{{ category.name }}</td>
+                        <td class="py-2 px-4 border-b">
+                            <ul class="list-disc list-inside">
+                                {% for product in category.product_list %}
                                 <li>{{ product.name }}</li>
-                            {% endfor %}
-                        </ul>
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.5.4/flowbite.min.js"></script>
 </body>
 </html>

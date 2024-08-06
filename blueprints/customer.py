@@ -1,4 +1,4 @@
-from flask import Blueprint, request, redirect, url_for, render_template, flash
+from flask import Blueprint, request, redirect, url_for, render_template, flash, session
 from models import db, Customer
 
 customer_bp = Blueprint('customer', __name__)
@@ -13,6 +13,11 @@ def add_customer():
         state = request.form['state']
         pincode = request.form['pincode']
         email = request.form['email']
+
+        organisation_id = session.get('organisation_id')
+        if not organisation_id:
+            flash('User is not logged in!', 'danger')
+            return redirect(url_for('auth.login'))
         
         new_customer = Customer(
             name=name,
@@ -21,7 +26,8 @@ def add_customer():
             district=district,
             state=state,
             pincode=pincode,
-            email=email
+            email=email,
+            organisation_id=organisation_id
         )
         
         db.session.add(new_customer)
@@ -34,5 +40,10 @@ def add_customer():
 
 @customer_bp.route('/view_customers')
 def view_customers():
-    customers = Customer.query.all()
+    organisation_id = session.get('organisation_id')
+    if not organisation_id:
+        flash('User is not logged in!', 'danger')
+        return redirect(url_for('auth.login'))
+
+    customers = Customer.query.filter_by(organisation_id=organisation_id).all()
     return render_template('view_customers.html', customers=customers)
