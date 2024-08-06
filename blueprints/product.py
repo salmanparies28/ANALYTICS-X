@@ -21,10 +21,10 @@ def add_category():
         new_category = ProductCategory(name=name, organisation_id=organisation_id)
         db.session.add(new_category)
         db.session.commit()
-        return redirect(url_for('product.view_categories'))
-    return render_template('add_category.html')
+        return redirect(url_for('product.add_category'))
+    return render_template('category.html')
 
-@product_bp.route('/view_categories')
+@product_bp.route('/category')
 def view_categories():
     organisation_id = session.get('organisation_id')
     if not organisation_id:
@@ -32,7 +32,7 @@ def view_categories():
         return redirect(url_for('auth.login'))
 
     categories = ProductCategory.query.filter_by(organisation_id=organisation_id).all()
-    return render_template('view_category.html', categories=categories)
+    return render_template('category.html', categories=categories)
 
 @product_bp.route('/add_product', methods=['GET', 'POST'])
 def add_product():
@@ -129,18 +129,13 @@ def delete_product(product_id):
 
     return redirect(url_for('product.view_products'))
 
-@product_bp.route('/inventory')
+@product_bp.route('/inventory', methods=['GET', 'POST'])
 def inventory():
     organisation_id = session.get('organisation_id')
     if not organisation_id:
         flash('User is not logged in!', 'danger')
         return redirect(url_for('auth.login'))
 
-    inventories = Inventory.query.filter_by(organisation_id=organisation_id).all()
-    return render_template('inventory.html', inventories=inventories)
-
-@product_bp.route('/restock_product', methods=['GET', 'POST'])
-def restock_product():
     if request.method == 'POST':
         product_id = request.form['product_id']
         additional_quantity = int(request.form['additional_quantity'])
@@ -153,10 +148,7 @@ def restock_product():
                 inventory.restock(additional_quantity)
 
         return redirect(url_for('product.inventory'))
-    organisation_id = session.get('organisation_id')
-    if not organisation_id:
-        flash('User is not logged in!', 'danger')
-        return redirect(url_for('auth.login'))
-
+    
     products = Product.query.filter_by(organisation_id=organisation_id).all()
-    return render_template('restock_product.html', products=products)
+    inventories = Inventory.query.filter_by(organisation_id=organisation_id).all()
+    return render_template('inventory.html', products=products, inventories=inventories)

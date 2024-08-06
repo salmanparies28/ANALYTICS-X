@@ -47,3 +47,41 @@ def view_customers():
 
     customers = Customer.query.filter_by(organisation_id=organisation_id).all()
     return render_template('view_customers.html', customers=customers)
+
+@customer_bp.route('/edit_customer/<int:id>', methods=['GET', 'POST'])
+def edit_customer(id):
+    customer = Customer.query.get_or_404(id)
+    organisation_id = session.get('organisation_id')
+    if not organisation_id:
+        flash('User is not logged in!', 'danger')
+        return redirect(url_for('auth.login'))
+    
+    if request.method == 'POST':
+        customer.name = request.form['name']
+        customer.phone = request.form['phone']
+        customer.city = request.form['city']
+        customer.district = request.form['district']
+        customer.state = request.form['state']
+        customer.pincode = request.form['pincode']
+        customer.email = request.form['email']
+        
+        db.session.commit()
+        
+        flash('Customer updated successfully!')
+        return redirect(url_for('customer.view_customers'))
+    
+    return render_template('edit_customer.html', customer=customer)
+
+@customer_bp.route('/delete_customer/<int:id>', methods=['POST'])
+def delete_customer(id):
+    customer = Customer.query.get_or_404(id)
+    organisation_id = session.get('organisation_id')
+    if not organisation_id:
+        flash('User is not logged in!', 'danger')
+        return redirect(url_for('auth.login'))
+
+    db.session.delete(customer)
+    db.session.commit()
+    
+    flash('Customer deleted successfully!')
+    return redirect(url_for('customer.view_customers'))
