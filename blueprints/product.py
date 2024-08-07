@@ -86,6 +86,10 @@ def edit_product(product_id):
 @product_bp.route('/update_product/<int:product_id>', methods=['POST'])
 def update_product(product_id):
     product = Product.query.get_or_404(product_id)
+    organisation_id = session.get('organisation_id')
+    if not organisation_id:
+        flash('User is not logged in!', 'danger')
+        return redirect(url_for('auth.login'))
 
     product.name = request.form['name']
     product.SKU = request.form['SKU']
@@ -97,6 +101,7 @@ def update_product(product_id):
 
     db.session.commit()
     return redirect(url_for('product.view_products'))
+
 
 @product_bp.route('/delete_product/<int:product_id>', methods=['GET'])
 def delete_product(product_id):
@@ -122,20 +127,30 @@ def inventory():
 
     if request.method == 'POST':
         product_id = request.form['product_id']
-        additional_quantity = int(request.form['additional_quantity'])
+        additional_quantity = request.form['additional_quantity']
+        inventory_item = Inventory.query.filter_by(product_id=product_id, organisation_id=organisation_id).first()
+        if inventory_item:
+            inventory_item.quantity += int(additional_quantity)
+        else:
+            new_inventory_item = Inventory(product_id=product_id, quantity=int(additional_quantity), organisation_id=organisation_id)
+            db.session.add(new_inventory_item)
+        db.session.commit()
+        flash('Inventory updated successfully!', 'success')
 
-        product = Product.query.get(product_id)
-        if product:
-            product.restock(additional_quantity)
-            inventory = Inventory.query.filter_by(product_id=product_id).first()
-            if inventory:
-                inventory.restock(additional_quantity)
-
-        return redirect(url_for('product.inventory'))
-    
     products = Product.query.filter_by(organisation_id=organisation_id).all()
-    inventories = Inventory.query.filter_by(organisation_id=organisation_id).all()
+
+    # Using left join to include categories even if not fetched
+    inventories = db.session.query(
+        Inventory,
+        Product.name.label('product_name'),
+        ProductCategory.name.label('category_name')
+    ).select_from(Inventory).join(Product, Inventory.product_id == Product.id)\
+     .outerjoin(ProductCategory, Product.category_id == ProductCategory.id)\
+     .filter(Product.organisation_id == organisation_id).all()
+
     return render_template('inventory.html', products=products, inventories=inventories)
+
+
 
 @product_bp.route('/edit_category/<int:category_id>', methods=['GET', 'POST'])
 def edit_category(category_id):

@@ -37,6 +37,7 @@ class Product(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('product_category.id'), nullable=True)  # Allow null if category not mandatory
     inventory = db.relationship('Inventory', backref='product', lazy=True)
 
+
     def restock(self, additional_quantity):
         self.quantity += additional_quantity
         db.session.commit()
