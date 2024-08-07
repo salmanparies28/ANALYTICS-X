@@ -1,122 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Create Bill</title>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <style>
-    .product-row {
-      margin-bottom: 10px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Create Bill</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 </head>
 <body>
-  <form id="create-bill-form" action="/create_bill" method="post">
-    <div>
-      <label for="customer_search">Customer Phone:</label>
-      <input type="text" id="customer_search" placeholder="Enter phone number" required>
-      <span id="customer_info"></span>
-      <input type="hidden" id="customer_id" name="customer_id">
+<div class="container">
+    <h1>Create Bill</h1>
+
+    <h2>Add Product</h2>
+    <form id="product-form">
+        <div class="form-group">
+            <label for="SKU">Product SKU:</label>
+            <input type="text" id="SKU" name="SKU" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity" name="quantity" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Product</button>
+    </form>
+
+    <h2>Products in Bill</h2>
+    <ul id="product-list" class="list-group">
+    </ul>
+    <h3>Total: <span id="total-price">0</span></h3>
+
+    <h2>Customer Details (Optional)</h2>
+    <form id="customer-form">
+        <div class="form-group">
+            <label for="customer_name">Customer Name:</label>
+            <input type="text" id="customer_name" name="customer_name" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="customer_phone">Customer Phone:</label>
+            <input type="text" id="customer_phone" name="customer_phone" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-success">Finalize Bill</button>
+    </form>
+
+    <h2>Invoice</h2>
+    <div id="invoice" class="card">
+        <div class="card-body">
+            <h4>Bill No: <span id="invoice-bill-no"></span></h4>
+            <p>Customer: <span id="invoice-customer-name"></span></p>
+            <p>Phone: <span id="invoice-customer-phone"></span></p>
+            <p>Date: <span id="invoice-date"></span></p>
+            <h5>Items</h5>
+            <ul id="invoice-items" class="list-group">
+            </ul>
+            <h4>Total Price: <span id="invoice-total-price"></span></h4>
+        </div>
     </div>
-    <div id="products-container">
-      <div class="product-row" id="product-row-0">
-        <label for="product_search_0">Product:</label>
-        <input type="text" id="product_search_0" class="product_search" placeholder="Search by name or SKU" required>
-        <span id="product_info_0"></span>
-        <input type="hidden" id="product_id_0" name="product_id[]" required>
-        <label for="quantity_0">Quantity:</label>
-        <input type="number" id="quantity_0" name="quantity[]" value="1" min="1" required>
-      </div>
-    </div>
-    <button type="button" id="add-product">Add Another Product</button><br><br>
-    <div>
-      <label>Total Amount: </label>
-      <span id="total_amount">0</span>
-    </div>
-    <input type="submit" value="Create Bill">
-  </form>
+</div>
 
-  <script>
-    let productIndex = 1;
-    let totalAmount = 0;
-
-    $(document).ready(function() {
-      $('#customer_search').on('blur', function() {
-        searchCustomer($(this).val());
-      });
-
-      $(document).on('blur', '.product_search', function() {
-        let index = $(this).attr('id').split('_')[2];
-        searchProduct($(this).val(), index);
-      });
-
-      $('#add-product').click(function() {
-        addProductRow();
-      });
-
-      $(document).on('change', 'input[name="quantity[]"]', function() {
-        updateTotalAmount();
-      });
-
-      $('#create-bill-form').submit(function() {
-        console.log('Customer ID:', $('#customer_id').val());
-        $('input[name="product_id[]"]').each(function(index) {
-          console.log('Product ID:', $(this).val());
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: '/billing/start_transaction',
+            type: 'POST',
+            success: function (response) {
+                console.log('Transaction started');
+            }
         });
-        return true; // Allow form submission
-      });
+
+        $('#product-form').submit(function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: '/billing/add_product',
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function (response) {
+                    if (response.status === 'success') {
+                        $('#product-list').append('<li class="list-group-item">' + response.product_name + ' - ' + response.quantity + ' - ' + response.total_price + '</li>');
+                        updateTotalPrice();
+                    } else {
+                        alert(response.message);
+                    }
+                }
+            });
+        });
+
+        $('#customer-form').submit(function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: '/billing/finalize_bill',
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function (response) {
+                    if (response.status === 'success') {
+                        $('#total-price').text(response.total_price);
+                        loadInvoice();
+                    }
+                }
+            });
+        });
+
+        function updateTotalPrice() {
+            $.ajax({
+                url: '/billing/view_bill',
+                type: 'GET',
+                success: function (response) {
+                    $('#total-price').text(response.total_price);
+                }
+            });
+        }
+
+        function loadInvoice() {
+            $.ajax({
+                url: '/billing/view_bill',
+                type: 'GET',
+                success: function (response) {
+                    $('#invoice-bill-no').text(response.bill_no);
+                    $('#invoice-customer-name').text(response.customer_name);
+                    $('#invoice-customer-phone').text(response.customer_phone);
+                    $('#invoice-date').text(response.date);
+                    $('#invoice-items').empty();
+                    response.items.forEach(item => {
+                        $('#invoice-items').append('<li class="list-group-item">' + item.product_name + ' - ' + item.quantity + ' - ' + item.total_price + '</li>');
+                    });
+                    $('#invoice-total-price').text(response.total_price);
+                }
+            });
+        }
     });
-
-    function searchCustomer(query) {
-      $.get('/api/customers', {q: query}, function(data) {
-        if (data.error) {
-          $('#customer_info').text('Customer not found');
-          $('#customer_id').val('');
-        } else {
-          $('#customer_info').text(data.name);
-          $('#customer_id').val(data.id);
-        }
-      });
-    }
-
-    function searchProduct(query, index) {
-      $.get('/api/products', {q: query}, function(data) {
-        if (data.error) {
-          $(`#product_info_${index}`).text('Product not found');
-          $(`#product_id_${index}`).val('');
-        } else {
-          $(`#product_info_${index}`).text(`${data.name} - ${data.SKU} - ${data.price}`);
-          $(`#product_id_${index}`).val(data.id);
-          updateTotalAmount();
-        }
-      });
-    }
-
-    function addProductRow() {
-      let productRow = `<div class="product-row" id="product-row-${productIndex}">
-        <label for="product_search_${productIndex}">Product:</label>
-        <input type="text" id="product_search_${productIndex}" class="product_search" placeholder="Search by name or SKU" required>
-        <span id="product_info_${productIndex}"></span>
-        <input type="hidden" id="product_id_${productIndex}" name="product_id[]" required>
-        <label for="quantity_${productIndex}">Quantity:</label>
-        <input type="number" id="quantity_${productIndex}" name="quantity[]" value="1" min="1" required>
-      </div>`;
-      $('#products-container').append(productRow);
-      productIndex++;
-    }
-
-    function updateTotalAmount() {
-      totalAmount = 0;
-      $('input[name="quantity[]"]').each(function(index) {
-        let quantity = $(this).val();
-        let productInfo = $(`#product_info_${index}`).text().split(' - ');
-        if (productInfo.length === 3) {
-          let price = parseFloat(productInfo[2]);
-          totalAmount += price * quantity;
-        }
-      });
-      $('#total_amount').text(totalAmount);
-    }
-  </script>
+</script>
 </body>
 </html>
