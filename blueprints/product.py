@@ -136,3 +136,20 @@ def inventory():
     products = Product.query.filter_by(organisation_id=organisation_id).all()
     inventories = Inventory.query.filter_by(organisation_id=organisation_id).all()
     return render_template('inventory.html', products=products, inventories=inventories)
+
+@product_bp.route('/edit_category/<int:category_id>', methods=['GET', 'POST'])
+def edit_category(category_id):
+    category = ProductCategory.query.get_or_404(category_id)
+    if request.method == 'POST':
+        category.name = request.form['name']
+        db.session.commit()
+        return redirect(url_for('product.view_categories'))
+    return render_template('edit_category.html', category=category)
+
+@product_bp.route('/delete_category/<int:category_id>', methods=['POST'])
+def delete_category(category_id):
+    category = ProductCategory.query.get_or_404(category_id)
+    db.session.delete(category)
+    db.session.commit()
+    return redirect(url_for('product.view_categories'))
+
