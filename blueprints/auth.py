@@ -4,6 +4,7 @@ from models import db, Organisation
 import random
 from datetime import datetime, timedelta
 
+
 auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
@@ -45,34 +46,39 @@ def register():
         return redirect(url_for('auth.login'))
     return render_template('register.html')
 
+ADMIN_EMAIL = 'admin@techvaseegrah.com'
+ADMIN_PASSWORD = 'techvaseegrah@2024!'
+
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
+        if email == ADMIN_EMAIL and password == ADMIN_PASSWORD:
+            session['organisation_id'] = None  # No organisation ID for admin
+            session['username'] = 'Admin'
+            session['is_admin'] = True
+            flash('Logged in successfully as admin!', 'success')
+            return redirect(url_for('auth.admin'))
+        
         user = Organisation.query.filter_by(email=email).first()
         if user and check_password_hash(user.password, password):
-            # Store user info in session
             session['organisation_id'] = user.id
             session['username'] = user.username
+            session['is_admin'] = False
             flash('Logged in successfully!', 'success')
-            return redirect(url_for('auth.home'))  # Ensure this redirect works correctly
+            return redirect(url_for('auth.home'))
         else:
             flash('Invalid email or password!', 'danger')
     return render_template('login.html')
 
 @auth_bp.route('/logout')
 def logout():
-    # Clear session data
     session.clear()
-    # Redirect to home page
     return redirect(url_for('index'))
 
-@auth_bp.route('/home')
-def home():
-    if 'organisation_id' in session:
-        return render_template('home.html', username=session['username'])
-    return redirect(url_for('auth.login'))
+
+
 
 @auth_bp.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
@@ -100,3 +106,41 @@ def reset_password():
             flash('Password reset successfully! You can now log in.', 'success')
             return redirect(url_for('auth.login'))
     return render_template('reset_password.html')
+
+@auth_bp.route('/admin', methods=['GET', 'POST'])
+def admin():
+    if 'is_admin' not in session or not session['is_admin']:
+        flash('Access denied!', 'danger')
+        return redirect(url_for('auth.login'))
+
+    if request.method == 'POST':
+        organisation_id = request.form['organisation_id']
+        additional_days = int(request.form['additional_days'])
+
+        user = Organisation.query.get(organisation_id)
+        if user:
+            user.end_date += timedelta(days=additional_days)
+            db.session.commit()
+            flash(f'Successfully extended subscription for {user.username} by {additional_days} days.', 'success')
+        else:
+            flash('Organisation not found!', 'danger')
+
+    organisations = Organisation.query.all()
+    for org in organisations:
+        org.remaining_days = (org.end_date - datetime.now().date()).days
+
+    return render_template('admin.html', organisations=organisations)
+
+
+@auth_bp.route('/lock')
+def lock():
+    return render_template('lock.html')
+
+@auth_bp.route('/home')
+def home():
+    if 'organisation_id' in session:
+        user = Organisation.query.get(session['organisation_id'])
+        if user.end_date < datetime.now().date():  # Convert datetime to date for comparison
+            return redirect(url_for('auth.lock'))
+        return render_template('home.html', username=session['username'])
+    return redirect(url_for('auth.login'))

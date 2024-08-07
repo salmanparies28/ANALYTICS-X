@@ -24,6 +24,7 @@
                     <tr>
                         <th class="py-2 px-4 border-b bg-indigo-100 text-left">Category Name</th>
                         <th class="py-2 px-4 border-b bg-indigo-100 text-left">Products</th>
+                        <th class="py-2 px-4 border-b bg-indigo-100 text-left">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -36,6 +37,12 @@
                                 <li>{{ product.name }}</li>
                                 {% endfor %}
                             </ul>
+                        </td>
+                        <td class="py-2 px-4 border-b">
+                            <a href="{{ url_for('product.edit_category', category_id=category.id) }}" class="bg-yellow-500 text-white px-2 py-1 rounded-md hover:bg-yellow-600">Edit</a>
+                            <form action="{{ url_for('product.delete_category', category_id=category.id) }}" method="post" style="display:inline;">
+                                <input type="submit" value="Delete" class="bg-red-600 text-white px-2 py-1 rounded-md hover:bg-red-700 cursor-pointer">
+                            </form>
                         </td>
                     </tr>
                     {% endfor %}

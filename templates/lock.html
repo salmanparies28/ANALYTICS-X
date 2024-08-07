@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Locked</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
+</head>
+<body class="bg-white text-gray-900 flex items-center justify-center min-h-screen">
+    <div class="text-center flex flex-col items-center">
+        <dotlottie-player src="https://lottie.host/53f6f6c2-c840-49fc-89de-a3ea794f1565/IF0VOa2bpb.json" background="transparent" speed="1" style="width: 300px; height: 300px;" loop autoplay></dotlottie-player>
+        <h1 class="text-3xl font-bold text-indigo-600 mt-4">Account Locked</h1>
+        <p class="text-lg text-gray-700 mt-2">Your subscription has expired. Please contact the administrator to renew your subscription.</p>
+        <a href="{{ url_for('auth.logout') }}" class="mt-4 inline-block bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+            Logout
+        </a>
+    </div>
+</body>
+</html>

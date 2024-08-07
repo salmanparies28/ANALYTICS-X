@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-white text-gray-900">
+    <div class="container mx-auto p-4">
+        <h1 class="text-3xl font-bold text-indigo-600 mb-4">Admin Panel</h1>
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flex items-center p-4 mb-4 text-sm text-{{ 'green-800 bg-green-50' if category == 'success' else 'red-800 bg-red-50' }} rounded-lg" role="alert">
+                        <svg class="flex-shrink-0 inline w-4 h-4 mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                        </svg>
+                        <span class="sr-only">Info</span>
+                        <div>
+                            <span class="font-medium">{{ category.title() }} alert!</span> {{ message }}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <h2 class="text-xl font-semibold text-indigo-500 mb-4 font-bold">Extend Client Subscriptions</h2>
+        <form method="POST" action="{{ url_for('auth.admin') }}" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <div class="mb-4">
+                <label for="organisation_id" class="block text-gray-700 text-sm font-bold mb-2">Select Organisation:</label>
+                <select name="organisation_id" id="organisation_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    {% for org in organisations %}
+                        <option value="{{ org.id }}">{{ org.name }} ({{ org.email }}) : {{ org.remaining_days }} days remaining</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-4">
+                <label for="additional_days" class="block text-gray-700 text-sm font-bold mb-2">Add Days:</label>
+                <input type="number" name="additional_days" id="additional_days" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <div class="flex items-center justify-between">
+                <button type="submit" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Extend Subscription
+                </button>
+            </div>
+        </form>
+        <a href="{{ url_for('auth.logout') }}" class="inline-block align-baseline font-bold text-sm text-indigo-500 hover:text-indigo-800">
+            Logout
+        </a>
+    </div>
+</body>
+</html>
