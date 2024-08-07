@@ -65,11 +65,12 @@ class Seller(db.Model):
 class TransactionRecord(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     bill_no = db.Column(db.Integer, unique=True, nullable=False)
-    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
     date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
     total_price = db.Column(db.Float, nullable=False)
     organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=True)  # Allow null if no customer info
     items = db.relationship('TransactionItem', backref='transaction', lazy=True)
+    customer = db.relationship('Customer', backref='transaction_records')
 
 class TransactionItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -81,12 +82,14 @@ class TransactionItem(db.Model):
 class Customer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    phone = db.Column(db.String(20), nullable=False)
-    city = db.Column(db.String(100), nullable=True)  # Optional field
-    district = db.Column(db.String(100), nullable=True)  # Optional field
-    state = db.Column(db.String(100), nullable=True)  # Optional field
-    pincode = db.Column(db.String(20), nullable=True)  # Optional field
-    email = db.Column(db.String(100), nullable=True)  # Optional field
+    phone = db.Column(db.String(15), nullable=False)
+    city = db.Column(db.String(100))
+    district = db.Column(db.String(100))
+    state = db.Column(db.String(100))
+    pincode = db.Column(db.String(10))
+    email = db.Column(db.String(120))
+    flat_no = db.Column(db.String(50))  # New field
+    street = db.Column(db.String(150))  # New field
     organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
 
 class Inventory(db.Model):

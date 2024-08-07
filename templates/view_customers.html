@@ -29,9 +29,11 @@
                         <td class="py-2 px-4 border-b">{{ customer.name }}</td>
                         <td class="py-2 px-4 border-b">{{ customer.phone }}</td>
                         <td class="py-2 px-4 border-b">
-                            {{ customer.city }}{% if customer.city %},{% endif %}
-                            {{ customer.district }}{% if customer.district %},{% endif %}
-                            {{ customer.state }}{% if customer.state %},{% endif %}
+                            {{ customer.flat_no }}{% if customer.flat_no %}, {% endif %}
+                            {{ customer.street }}{% if customer.street %}, {% endif %}
+                            {{ customer.city }}{% if customer.city %}, {% endif %}
+                            {{ customer.district }}{% if customer.district %}, {% endif %}
+                            {{ customer.state }}{% if customer.state %}, {% endif %}
                             {{ customer.pincode }}
                         </td>
                         <td class="py-2 px-4 border-b">{{ customer.email }}</td>

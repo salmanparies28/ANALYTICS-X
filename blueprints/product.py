@@ -12,26 +12,18 @@ if not os.path.exists(UPLOAD_FOLDER):
 @product_bp.route('/add_category', methods=['GET', 'POST'])
 def add_category():
     organisation_id = session.get('organisation_id')
+    user_email = session.get('user_email')
     if not organisation_id:
         flash('User is not logged in!', 'danger')
         return redirect(url_for('auth.login'))
 
     if request.method == 'POST':
         name = request.form['name']
-<<<<<<< HEAD
-        organisation_id = session.get('organisation_id')
-        user_email = session.get('user_email')
-        if not organisation_id:
-            flash('User is not logged in!', 'danger')
-            return redirect(url_for('auth.login'))
-
-=======
         existing_category = ProductCategory.query.filter_by(name=name, organisation_id=organisation_id).first()
         if existing_category:
             flash('Category name is already in use!', 'danger')
             return render_template('category.html', error_message="Category name is already in use.")
         
->>>>>>> 7d0baf8f0d96f453ca5a423a2ba426440b1cae69
         new_category = ProductCategory(name=name, organisation_id=organisation_id)
         db.session.add(new_category)
         db.session.commit()
@@ -130,32 +122,6 @@ def delete_product(product_id):
         flash('User is not logged in!', 'danger')
         return redirect(url_for('auth.login'))
 
-<<<<<<< HEAD
-=======
-    new_sku = request.form['SKU']
-    
-    # Check if SKU already exists and is not the same as the current product's SKU
-    existing_product = Product.query.filter(Product.SKU == new_sku, Product.id != product_id, Product.organisation_id == organisation_id).first()
-    if existing_product:
-        flash('SKU code is already in use!', 'danger')
-        return render_template('edit_product.html', product=product, categories=ProductCategory.query.filter_by(organisation_id=organisation_id).all())
-    
-    product.name = request.form['name']
-    product.SKU = new_sku
-    product.category_id = request.form['category_id']
-    product.net_price = request.form['net_price']
-    product.selling_price = request.form['selling_price']
-    product.quantity = request.form['quantity']
-    product.seller = request.form['seller']
-
-    db.session.commit()
-    return redirect(url_for('product.view_products'))
-
-@product_bp.route('/delete_product/<int:product_id>', methods=['GET'])
-def delete_product(product_id):
-    product = Product.query.get_or_404(product_id)
-    
->>>>>>> 7d0baf8f0d96f453ca5a423a2ba426440b1cae69
     # Remove from Inventory if exists
     inventory = Inventory.query.filter_by(product_id=product.id).first()
     if inventory:
@@ -214,7 +180,7 @@ def edit_category(category_id):
         new_name = request.form['name']
         
         # Check if new category name already exists
-        existing_category = ProductCategory.query.filter_by(name=new_name, organisation_id=session.get('organisation_id')).first()
+        existing_category = ProductCategory.query.filter_by(name=new_name, organisation_id=organisation_id).first()
         if existing_category and existing_category.id != category.id:
             flash('Category name is already in use!', 'danger')
             return render_template('edit_category.html', category=category, error_message="Category name is already in use.")
@@ -229,12 +195,12 @@ def edit_category(category_id):
 def check_category():
     name = request.form.get('name')
     organisation_id = session.get('organisation_id')
+    user_email = session.get('user_email')
 
     if not organisation_id:
         return jsonify({'exists': False})
 
     exists = ProductCategory.query.filter_by(name=name, organisation_id=organisation_id).first() is not None
-
     return jsonify({'exists': exists})
 
 @product_bp.route('/delete_category/<int:category_id>', methods=['POST'])
@@ -250,16 +216,14 @@ def delete_category(category_id):
     db.session.commit()
     flash('Category deleted successfully!', 'success')
     return redirect(url_for('product.view_categories'))
-<<<<<<< HEAD
-=======
 
 @product_bp.route('/check_sku', methods=['POST'])
 def check_sku():
     sku = request.form.get('SKU')
     organisation_id = session.get('organisation_id')
+    user_email = session.get('user_email')
     if not organisation_id:
         return jsonify({'exists': False})
 
     exists = Product.query.filter_by(SKU=sku, organisation_id=organisation_id).first() is not None
     return jsonify({'exists': exists})
->>>>>>> 7d0baf8f0d96f453ca5a423a2ba426440b1cae69

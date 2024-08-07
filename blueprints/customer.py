@@ -16,6 +16,7 @@ def add_customer():
         email = request.form['email']
 
         organisation_id = session.get('organisation_id')
+        user_email = session.get('user_email')
         if not organisation_id:
             flash('User is not logged in!', 'danger')
             return redirect(url_for('auth.login'))
@@ -42,6 +43,7 @@ def add_customer():
 @customer_bp.route('/view_customers')
 def view_customers():
     organisation_id = session.get('organisation_id')
+    user_email = session.get('user_email')
     if not organisation_id:
         flash('User is not logged in!', 'danger')
         return redirect(url_for('auth.login'))
@@ -53,6 +55,7 @@ def view_customers():
 def edit_customer(id):
     customer = Customer.query.get_or_404(id)
     organisation_id = session.get('organisation_id')
+    user_email = session.get('user_email')
     if not organisation_id:
         flash('User is not logged in!', 'danger')
         return redirect(url_for('auth.login'))
@@ -77,6 +80,7 @@ def edit_customer(id):
 def check_phone():
     phone = request.form.get('phone')
     organisation_id = session.get('organisation_id')
+    user_email = session.get('user_email')
 
     if not organisation_id:
         return jsonify({'exists': False})
@@ -84,11 +88,11 @@ def check_phone():
     exists = Customer.query.filter_by(phone=phone, organisation_id=organisation_id).first() is not None
     return jsonify({'exists': exists})
 
-
 @customer_bp.route('/delete_customer/<int:id>', methods=['POST'])
 def delete_customer(id):
     customer = Customer.query.get_or_404(id)
     organisation_id = session.get('organisation_id')
+    user_email = session.get('user_email')
     if not organisation_id:
         flash('User is not logged in!', 'danger')
         return redirect(url_for('auth.login'))
