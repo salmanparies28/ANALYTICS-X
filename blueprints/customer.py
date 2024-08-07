@@ -1,5 +1,6 @@
 from flask import Blueprint, request, redirect, url_for, render_template, flash, session
 from models import db, Customer
+from flask import jsonify
 
 customer_bp = Blueprint('customer', __name__)
 
@@ -71,6 +72,18 @@ def edit_customer(id):
         return redirect(url_for('customer.view_customers'))
     
     return render_template('edit_customer.html', customer=customer)
+
+@customer_bp.route('/customer.edit_customer', methods=['POST'])
+def check_phone():
+    phone = request.form.get('phone')
+    organisation_id = session.get('organisation_id')
+
+    if not organisation_id:
+        return jsonify({'exists': False})
+
+    exists = Customer.query.filter_by(phone=phone, organisation_id=organisation_id).first() is not None
+    return jsonify({'exists': exists})
+
 
 @customer_bp.route('/delete_customer/<int:id>', methods=['POST'])
 def delete_customer(id):
