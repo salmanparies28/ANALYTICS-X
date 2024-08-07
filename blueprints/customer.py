@@ -34,7 +34,7 @@ def add_customer():
         db.session.commit()
         
         flash('Customer added successfully!')
-        return redirect(url_for('customer.view_customers'))
+        return redirect(url_for('auth.home'))
     
     return render_template('add_customer.html')
 

@@ -3,12 +3,23 @@ from datetime import datetime
 
 class Organisation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), nullable=False)
     password = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     phone = db.Column(db.String(20), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     company_size = db.Column(db.String(50), nullable=False)
+    shop_name = db.Column(db.String(100), nullable=False)
+    flatno = db.Column(db.String(50), nullable=False)
+    street = db.Column(db.String(100), nullable=False)
+    city = db.Column(db.String(100), nullable=False)
+    district = db.Column(db.String(100), nullable=False)
+    state = db.Column(db.String(100), nullable=False)
+    country = db.Column(db.String(100), nullable=False)
+    pincode = db.Column(db.String(20), nullable=False)
+    mobile_number = db.Column(db.String(20), nullable=False)
+    landline_number = db.Column(db.String(20), nullable=True)
+    website_address = db.Column(db.String(100), nullable=True)
+    gst_number = db.Column(db.String(20), nullable=True)
     subscription_type = db.Column(db.String(50), nullable=False)
     end_date = db.Column(db.Date, nullable=False)
     product_categories = db.relationship('ProductCategory', backref='organisation', lazy=True)
@@ -17,6 +28,8 @@ class Organisation(db.Model):
     transaction_records = db.relationship('TransactionRecord', backref='organisation', lazy=True)
     customers = db.relationship('Customer', backref='organisation', lazy=True)
     inventories = db.relationship('Inventory', backref='organisation', lazy=True)
+
+
 
 class ProductCategory(db.Model):
     id = db.Column(db.Integer, primary_key=True)

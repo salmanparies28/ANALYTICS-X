@@ -14,6 +14,7 @@ def add_category():
     if request.method == 'POST':
         name = request.form['name']
         organisation_id = session.get('organisation_id')
+        user_email = session.get('user_email')
         if not organisation_id:
             flash('User is not logged in!', 'danger')
             return redirect(url_for('auth.login'))
@@ -27,6 +28,7 @@ def add_category():
 @product_bp.route('/category')
 def view_categories():
     organisation_id = session.get('organisation_id')
+    user_email = session.get('user_email')
     if not organisation_id:
         flash('User is not logged in!', 'danger')
         return redirect(url_for('auth.login'))
@@ -37,6 +39,7 @@ def view_categories():
 @product_bp.route('/add_product', methods=['GET', 'POST'])
 def add_product():
     organisation_id = session.get('organisation_id')
+    user_email = session.get('user_email')
     if not organisation_id:
         flash('User is not logged in!', 'danger')
         return redirect(url_for('auth.login'))
@@ -65,6 +68,7 @@ def add_product():
 @product_bp.route('/view_products')
 def view_products():
     organisation_id = session.get('organisation_id')
+    user_email = session.get('user_email')
     if not organisation_id:
         flash('User is not logged in!', 'danger')
         return redirect(url_for('auth.login'))
@@ -72,41 +76,40 @@ def view_products():
     products = Product.query.filter_by(organisation_id=organisation_id).all()
     return render_template('view_products.html', products=products)
 
-@product_bp.route('/edit_product/<int:product_id>', methods=['GET'])
+@product_bp.route('/edit_product/<int:product_id>', methods=['GET', 'POST'])
 def edit_product(product_id):
     product = Product.query.get_or_404(product_id)
     organisation_id = session.get('organisation_id')
+    user_email = session.get('user_email')
     if not organisation_id:
         flash('User is not logged in!', 'danger')
         return redirect(url_for('auth.login'))
 
     categories = ProductCategory.query.filter_by(organisation_id=organisation_id).all()
+    if request.method == 'POST':
+        product.name = request.form['name']
+        product.SKU = request.form['SKU']
+        product.category_id = request.form['category_id']
+        product.net_price = request.form['net_price']
+        product.selling_price = request.form['selling_price']
+        product.quantity = request.form['quantity']
+        product.seller = request.form['seller']
+        
+        db.session.commit()
+        flash('Product updated successfully!', 'success')
+        return redirect(url_for('product.view_products'))
+    
     return render_template('edit_product.html', product=product, categories=categories)
 
-@product_bp.route('/update_product/<int:product_id>', methods=['POST'])
-def update_product(product_id):
+@product_bp.route('/delete_product/<int:product_id>', methods=['POST'])
+def delete_product(product_id):
     product = Product.query.get_or_404(product_id)
     organisation_id = session.get('organisation_id')
+    user_email = session.get('user_email')
     if not organisation_id:
         flash('User is not logged in!', 'danger')
         return redirect(url_for('auth.login'))
 
-    product.name = request.form['name']
-    product.SKU = request.form['SKU']
-    product.category_id = request.form['category_id']
-    product.net_price = request.form['net_price']
-    product.selling_price = request.form['selling_price']
-    product.quantity = request.form['quantity']
-    product.seller = request.form['seller']
-
-    db.session.commit()
-    return redirect(url_for('product.view_products'))
-
-
-@product_bp.route('/delete_product/<int:product_id>', methods=['GET'])
-def delete_product(product_id):
-    product = Product.query.get_or_404(product_id)
-    
     # Remove from Inventory if exists
     inventory = Inventory.query.filter_by(product_id=product.id).first()
     if inventory:
@@ -115,12 +118,14 @@ def delete_product(product_id):
     # Delete the product
     db.session.delete(product)
     db.session.commit()
+    flash('Product deleted successfully!', 'success')
 
     return redirect(url_for('product.view_products'))
 
 @product_bp.route('/inventory', methods=['GET', 'POST'])
 def inventory():
     organisation_id = session.get('organisation_id')
+    user_email = session.get('user_email')
     if not organisation_id:
         flash('User is not logged in!', 'danger')
         return redirect(url_for('auth.login'))
@@ -150,21 +155,32 @@ def inventory():
 
     return render_template('inventory.html', products=products, inventories=inventories)
 
-
-
 @product_bp.route('/edit_category/<int:category_id>', methods=['GET', 'POST'])
 def edit_category(category_id):
     category = ProductCategory.query.get_or_404(category_id)
+    organisation_id = session.get('organisation_id')
+    user_email = session.get('user_email')
+    if not organisation_id:
+        flash('User is not logged in!', 'danger')
+        return redirect(url_for('auth.login'))
+
     if request.method == 'POST':
         category.name = request.form['name']
         db.session.commit()
+        flash('Category updated successfully!', 'success')
         return redirect(url_for('product.view_categories'))
     return render_template('edit_category.html', category=category)
 
 @product_bp.route('/delete_category/<int:category_id>', methods=['POST'])
 def delete_category(category_id):
     category = ProductCategory.query.get_or_404(category_id)
+    organisation_id = session.get('organisation_id')
+    user_email = session.get('user_email')
+    if not organisation_id:
+        flash('User is not logged in!', 'danger')
+        return redirect(url_for('auth.login'))
+
     db.session.delete(category)
     db.session.commit()
+    flash('Category deleted successfully!', 'success')
     return redirect(url_for('product.view_categories'))
-

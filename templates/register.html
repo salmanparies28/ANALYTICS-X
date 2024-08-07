@@ -26,27 +26,25 @@
             {% endif %}
         {% endwith %}
 
-        <form id="registerForm" action="/register" method="post" onsubmit="return validateForm()">
+        <form id="registerForm" action="/register" method="post" onsubmit="return showShopDetailsModal(event)">
+            <!-- Existing Fields -->
             <div class="mb-4">
-                <label for="username" class="block text-gray-700">Username</label>
-                <input type="text" id="username" name="username" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-            </div>
-            <div class="mb-4">
-                <label for="password" class="block text-gray-700">Password</label>
-                <input type="password" id="password" name="password" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <label for="name" class="block text-gray-700">Name</label>
+                <input type="text" id="name" name="name" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
             </div>
             <div class="mb-4">
                 <label for="email" class="block text-gray-700">Email</label>
                 <input type="text" id="email" name="email" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
             </div>
             <div class="mb-4">
+                <label for="password" class="block text-gray-700">Password</label>
+                <input type="password" id="password" name="password" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            <div class="mb-4">
                 <label for="phone" class="block text-gray-700">Phone</label>
                 <input type="text" id="phone" name="phone" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
             </div>
-            <div class="mb-4">
-                <label for="name" class="block text-gray-700">Name</label>
-                <input type="text" id="name" name="name" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-            </div>
+
             <div class="mb-4">
                 <label for="company_size" class="block text-gray-700">Company Size</label>
                 <select id="company_size" name="company_size" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
@@ -67,54 +65,72 @@
         </form>
     </div>
 
+    <!-- Shop Details Modal -->
+    <div id="shopDetailsModal" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 hidden">
+        <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl relative overflow-y-auto" style="max-height: 80%;">
+            <h2 class="text-2xl font-bold mb-6 text-center">Enter Shop Details</h2>
+            <form id="shopDetailsForm">
+                <div class="mb-4">
+                    <label for="pincode" class="block text-gray-700">Pincode</label>
+                    <input type="text" id="pincode" name="pincode" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" onchange="fetchPincodeDetails()">
+                </div>
+                <div class="mb-4">
+                    <label for="shop_name" class="block text-gray-700">Shop Name</label>
+                    <input type="text" id="shop_name" name="shop_name" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="mb-4">
+                    <label for="flatno" class="block text-gray-700">Flat No</label>
+                    <input type="text" id="flatno" name="flatno" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="mb-4">
+                    <label for="street" class="block text-gray-700">Street</label>
+                    <input type="text" id="street" name="street" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="mb-4">
+                    <label for="city" class="block text-gray-700">City</label>
+                    <input type="text" id="city" name="city" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" readonly>
+                </div>
+                <div class="mb-4">
+                    <label for="district" class="block text-gray-700">District</label>
+                    <input type="text" id="district" name="district" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" readonly>
+                </div>
+                <div class="mb-4">
+                    <label for="state" class="block text-gray-700">State</label>
+                    <input type="text" id="state" name="state" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" readonly>
+                </div>
+                <div class="mb-4">
+                    <label for="country" class="block text-gray-700">Country</label>
+                    <input type="text" id="country" name="country" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" readonly>
+                </div>
+                <div class="mb-4">
+                    <label for="mobile_number" class="block text-gray-700">Mobile Number</label>
+                    <input type="text" id="mobile_number" name="mobile_number" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="mb-4">
+                    <label for="landline_number" class="block text-gray-700">Landline Number (Optional)</label>
+                    <input type="text" id="landline_number" name="landline_number" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="mb-4">
+                    <label for="website_address" class="block text-gray-700">Website Address (Optional)</label>
+                    <input type="text" id="website_address" name="website_address" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="mb-4">
+                    <label for="gst_number" class="block text-gray-700">GST Number (Optional)</label>
+                    <input type="text" id="gst_number" name="gst_number" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="flex justify-end">
+                    <button type="button" onclick="submitShopDetails()" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Terms and Conditions Modal -->
     <div id="termsModal" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 hidden">
         <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl relative" onclick="event.stopPropagation()">
             <h1 class="text-3xl font-bold mb-6 text-center">Terms and Conditions</h1>
             <div class="text-gray-700 mb-4 overflow-y-auto" style="max-height: 400px;">
-            
-                
-                <h2 class="text-2xl font-bold mb-4">Data Collection and Use</h2>
-                <p>We collect personal and business information from you to provide and improve our services. This includes, but is not limited to, your name, email address, phone number, company details, and payment information.</p>
-                <p>We use this data to:</p>
-                <ul class="list-disc list-inside">
-                    <li>Provide and maintain our services</li>
-                    <li>Process your transactions</li>
-                    <li>Improve our website, billing software, and analytics software</li>
-                    <li>Communicate with you about your account and our services</li>
-                    <li>Comply with legal obligations</li>
-                    <li>Analyze user behavior to improve our services</li>
-                    <li>Provide customer support</li>
-                    <li>Send you marketing and promotional materials (you can opt-out at any time)</li>
-                </ul>
-                
-                <h2 class="text-2xl font-bold mb-4">Data Privacy and Security</h2>
-                <p>We take the privacy and security of your data seriously. We implement appropriate technical and organizational measures to protect your data from unauthorized access, alteration, disclosure, or destruction.</p>
-                <p>However, please be aware that no method of transmission over the internet or method of electronic storage is 100% secure. While we strive to protect your data, we cannot guarantee its absolute security.</p>
-                
-                <h2 class="text-2xl font-bold mb-4">User Responsibilities</h2>
-                <p>As a user of our services, you agree to:</p>
-                <ul class="list-disc list-inside">
-                    <li>Provide accurate and up-to-date information</li>
-                    <li>Maintain the confidentiality of your account credentials</li>
-                    <li>Notify us immediately of any unauthorized use of your account</li>
-                    <li>Use our services in compliance with all applicable laws and regulations</li>
-                </ul>
-                
-                <h2 class="text-2xl font-bold mb-4">Intellectual Property</h2>
-                <p>All content and materials provided by our website, billing software, and analytics software, including but not limited to text, graphics, logos, and software, are the intellectual property of [Your Company Name]. You may not use, reproduce, or distribute any of this content without our prior written permission.</p>
-                
-                <h2 class="text-2xl font-bold mb-4">Termination</h2>
-                <p>We reserve the right to terminate or suspend your access to our services at any time, without prior notice or liability, for any reason, including but not limited to a breach of these terms.</p>
-                
-                <h2 class="text-2xl font-bold mb-4">Limitation of Liability</h2>
-                <p>To the fullest extent permitted by law, [Your Company Name] shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses resulting from (a) your use or inability to use our services; (b) any unauthorized access to or use of our servers and/or any personal information stored therein.</p>
-                
-                <h2 class="text-2xl font-bold mb-4">Changes to These Terms</h2>
-                <p>We may update our Terms and Conditions from time to time. We will notify you of any changes by posting the new Terms and Conditions on our website. You are advised to review these terms periodically for any changes. Changes to these terms are effective when they are posted on this page.</p>
-                
-                <h2 class="text-2xl font-bold mb-4">Contact Us</h2>
-                <p>If you have any questions about these Terms and Conditions, please contact us at techvaseegrah@gmail.com .</p>
+                <!-- Terms and Conditions Content -->
             </div>
             <div class="flex justify-end">
                 <button onclick="closeModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Close</button>
@@ -149,6 +165,44 @@
             if (event.target === event.currentTarget) {
                 closeModal();
             }
+        }
+
+        function showShopDetailsModal(event) {
+            event.preventDefault();
+            const modal = document.getElementById('shopDetailsModal');
+            modal.classList.remove('hidden');
+        }
+
+        function fetchPincodeDetails() {
+            const pincode = document.getElementById('pincode').value;
+            fetch(`/fetch-pincode-details?pincode=${pincode}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data) {
+                        document.getElementById('city').value = data.city;
+                        document.getElementById('district').value = data.district;
+                        document.getElementById('state').value = data.state;
+                        document.getElementById('country').value = data.country;
+                    }
+                });
+        }
+
+        function submitShopDetails() {
+            const modal = document.getElementById('shopDetailsModal');
+            const form = document.getElementById('registerForm');
+            const shopDetailsForm = document.getElementById('shopDetailsForm');
+
+            const shopDetails = new FormData(shopDetailsForm);
+            shopDetails.forEach((value, key) => {
+                let input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = value;
+                form.appendChild(input);
+            });
+
+            modal.classList.add('hidden');
+            form.submit();
         }
     </script>
 </body>
