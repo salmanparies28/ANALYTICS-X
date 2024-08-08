@@ -74,7 +74,7 @@ def add_product():
         db.session.add(new_inventory)
         db.session.commit()
 
-        return redirect(url_for('auth.home'))
+        return redirect(url_for('product.view_products'))
     return render_template('add_product.html', categories=categories)
 
 @product_bp.route('/view_products')

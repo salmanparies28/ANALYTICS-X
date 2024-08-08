@@ -183,3 +183,7 @@ def home():
             return redirect(url_for('auth.lock'))
         return render_template('home.html', email=session['user_email'])
     return redirect(url_for('auth.login'))
+
+@auth_bp.route('/settings')
+def settings():
+    return render_template('settings.html')
