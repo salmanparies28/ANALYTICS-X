@@ -1,16 +1,20 @@
-from flask import Blueprint, request, render_template, redirect, url_for, session, flash
+import os
+from flask import Blueprint, request, render_template, redirect, url_for, session, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, Organisation
 import random
 from datetime import datetime, timedelta
-from flask import jsonify, request
 import csv
 
 auth_bp = Blueprint('auth', __name__)
 
+# Get the absolute path to the current script directory
+base_dir = os.path.abspath(os.path.dirname(__file__))
+csv_file_path = os.path.join(base_dir, '..', 'static', 'files', 'pincodedata.csv')
+
 # Load the pincode data into memory
 pincode_data = {}
-with open('static/files/pincodedata.csv', newline='') as csvfile:
+with open(csv_file_path, newline='') as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
         pincode_data[row['Pincode']] = {
