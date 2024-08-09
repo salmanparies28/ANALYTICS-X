@@ -8,11 +8,11 @@ customer_bp = Blueprint('customer', __name__)
 def add_customer():
     if request.method == 'POST':
         name = request.form['name']
+        pincode = request.form['pincode']
         phone = request.form['phone']
         city = request.form['city']
         district = request.form['district']
         state = request.form['state']
-        pincode = request.form['pincode']
         email = request.form['email']
 
         organisation_id = session.get('organisation_id')
@@ -40,6 +40,8 @@ def add_customer():
     
     return render_template('add_customer.html')
 
+
+
 @customer_bp.route('/view_customers')
 def view_customers():
     organisation_id = session.get('organisation_id')
@@ -62,11 +64,11 @@ def edit_customer(id):
     
     if request.method == 'POST':
         customer.name = request.form['name']
+        customer.pincode = request.form['pincode']
         customer.phone = request.form['phone']
         customer.city = request.form['city']
         customer.district = request.form['district']
         customer.state = request.form['state']
-        customer.pincode = request.form['pincode']
         customer.email = request.form['email']
         
         db.session.commit()
