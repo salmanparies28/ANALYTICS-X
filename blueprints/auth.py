@@ -188,6 +188,93 @@ def home():
         return render_template('home.html', email=session['user_email'])
     return redirect(url_for('auth.login'))
 
-@auth_bp.route('/settings')
+@auth_bp.route('/settings', methods=['GET', 'POST'])
 def settings():
-    return render_template('settings.html')
+    if 'organisation_id' not in session:
+        flash('You must be logged in to access this page.', 'danger')
+        return redirect(url_for('auth.login'))
+
+    user = Organisation.query.get(session['organisation_id'])
+
+    if not user:
+        flash('User not found!', 'danger')
+        return redirect(url_for('auth.login'))
+
+    if request.method == 'POST':
+        if 'update_shop' in request.form:
+            # Update all shop details
+            user.shop_name = request.form['shop_name']
+            user.flatno = request.form['flatno']
+            user.street = request.form['street']
+            user.city = request.form['city']
+            user.district = request.form['district']
+            user.state = request.form['state']
+            user.country = request.form['country']
+            user.pincode = request.form['pincode']
+            user.mobile_number = request.form['mobile_number']
+            user.landline_number = request.form.get('landline_number')
+            user.website_address = request.form.get('website_address')
+            user.gst_number = request.form.get('gst_number')
+            user.company_size = request.form['company_size']
+
+            try:
+                db.session.commit()
+                message = 'Shop information updated successfully!'
+                category = 'success'
+            except Exception as e:
+                db.session.rollback()
+                message = 'An error occurred while updating shop details.'
+                category = 'danger'
+            
+            return render_template('settings.html', user=user, message=message, category=category, form='updateShop')
+
+    return render_template('settings.html', user=user)
+
+
+@auth_bp.route('/update_password', methods=['POST'])
+def update_password():
+    if 'organisation_id' not in session:
+        flash('You must be logged in to update your password.', 'danger')
+        return redirect(url_for('auth.login'))
+
+    user = Organisation.query.get(session['organisation_id'])
+    if not user:
+        flash('User not found!', 'danger')
+        return redirect(url_for('auth.login'))
+
+    old_password = request.form['old_password']
+    new_password = request.form['new_password']
+    confirm_password = request.form['confirm_password']
+
+    if not check_password_hash(user.password, old_password):
+        message = 'Old password is incorrect.'
+        category = 'danger'
+    elif new_password != confirm_password:
+        message = 'New passwords do not match.'
+        category = 'danger'
+    else:
+        user.password = generate_password_hash(new_password)
+        try:
+            db.session.commit()
+            message = 'Password updated successfully!'
+            category = 'success'
+        except Exception as e:
+            db.session.rollback()
+            message = 'An error occurred while updating the password.'
+            category = 'danger'
+
+    return render_template('settings.html', user=user, message=message, category=category, form='updatePassword')
+
+@auth_bp.route('/new-forgot-password', methods=['GET', 'POST'])
+def new_forgot_password():
+    if request.method == 'POST':
+        email = request.form['email']
+        phone = request.form['phone']
+        user = Organisation.query.filter_by(email=email, phone=phone).first()
+        if user:
+            session['reset_email'] = email
+            flash('Email and phone number verified! You can now reset your password.', 'success')
+            return redirect(url_for('auth.reset_password'))
+        else:
+            flash('No account found with that email and phone number combination.', 'danger')
+    return render_template('new_forgot_password.html')

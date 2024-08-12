@@ -50,6 +50,7 @@ def get_date_range(filter_type):
             end_date = datetime.strptime(end_date, '%Y-%m-%d')
         else:
             start_date = end_date
+    print(f"Fetching data for date range: {start_date} to {end_date}")  # Debug info
     return start_date, end_date
 
 def get_chart_data(organisation_id, start_date, end_date):
@@ -97,11 +98,12 @@ def get_chart_data(organisation_id, start_date, end_date):
     df_transaction = pd.DataFrame(transaction_data)
     df_transaction_agg = df_transaction.groupby('Date').agg({'Total Price': 'sum'}).reset_index()
 
-    # Fetch and process data for net price and selling price
+    # Fetch and process data for net price and selling price, and calculate total profit
     price_data = db.session.query(
         TransactionRecord.date,
         db.func.sum(Product.net_price * TransactionItem.quantity).label('total_net_price'),
-        db.func.sum(Product.selling_price * TransactionItem.quantity).label('total_selling_price')
+        db.func.sum(Product.selling_price * TransactionItem.quantity).label('total_selling_price'),
+        db.func.sum((Product.selling_price - Product.net_price) * TransactionItem.quantity).label('total_profit')
     ).select_from(TransactionItem).join(Product, TransactionItem.product_id == Product.id).join(TransactionRecord, TransactionItem.transaction_id == TransactionRecord.id).filter(
         TransactionRecord.date.between(start_date, end_date),
         TransactionRecord.organisation_id == organisation_id
@@ -111,6 +113,19 @@ def get_chart_data(organisation_id, start_date, end_date):
     price_dates = [record.date.strftime('%Y-%m-%d') for record in price_data]
     net_prices = [record.total_net_price for record in price_data]
     selling_prices = [record.total_selling_price for record in price_data]
+    total_profits = [record.total_profit for record in price_data]
+
+    # Calculate total profit for the selected period
+    total_profit = sum(total_profits) or 0.0  # Default to 0.0 if None
+
+    # Calculate total orders (bills)
+    total_orders = db.session.query(db.func.count(TransactionRecord.id)).filter(
+        TransactionRecord.date.between(start_date, end_date),
+        TransactionRecord.organisation_id == organisation_id
+    ).scalar() or 0  # Default to 0 if None
+
+    # Debug info to ensure correct data is fetched
+    print(f"Total Orders: {total_orders}, Total Profit: {total_profit}")
 
     return {
         'category_data': category_data,
@@ -127,5 +142,7 @@ def get_chart_data(organisation_id, start_date, end_date):
             'labels': price_dates,
             'net_prices': net_prices,
             'selling_prices': selling_prices
-        }
+        },
+        'total_profit': total_profit,  # Add total_profit to chart_data
+        'total_orders': total_orders  # Add total_orders to chart_data
     }

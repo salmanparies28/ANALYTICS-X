@@ -8,8 +8,7 @@
 <body class="bg-gray-100">
     <div class="container mx-auto p-6">
         <h1 class="text-3xl font-bold text-indigo-600 mb-6">Edit Product</h1>
-        <form action="{{ url_for('product.update_product', product_id=product.id) }}" method="post" enctype="multipart/form-data" class="bg-white p-6 rounded-lg shadow-md">
-            <input type="hidden" name="_method" value="PUT">
+        <form action="{{ url_for('product.edit_product', product_id=product.id) }}" method="post" enctype="multipart/form-data" class="bg-white p-6 rounded-lg shadow-md">
             
             <div class="mb-4">
                 <label for="name" class="block text-gray-700 font-bold mb-2">Product Name:</label>
