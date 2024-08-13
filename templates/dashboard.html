@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         .chart-container {
             width: 48%; /* Adjust as needed */
@@ -95,7 +97,7 @@
             </div>
         </div>
     </div>
-
+    
     <script>
         const chartData = {{ chart_data | tojson | safe }};
         let categoryChart, topProductChart, leastProductChart, transactionChart, priceChart;
@@ -234,41 +236,22 @@
                 document.querySelector('.custom-date').style.display = 'none';
                 fetch(`/dashboard_data?filter=${filter}`)
                     .then(response => response.json())
-                    .then(data => {
-                        console.log(`Data fetched for ${filter}:`, data);  // Debugging log
-                        initializeCharts(data);
-                    })
-                    .catch(error => console.error('Error fetching data:', error));
+                    .then(data => initializeCharts(data));
             }
         });
 
         document.getElementById('apply-filter').addEventListener('click', function() {
             const startDate = document.getElementById('start-date').value;
             const endDate = document.getElementById('end-date').value;
-            if (startDate && endDate) {
-                fetch(`/dashboard_data?filter=custom&start_date=${startDate}&end_date=${endDate}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log("Data fetched for custom range:", data);  // Debugging log
-                        initializeCharts(data);
-                    })
-                    .catch(error => console.error('Error fetching data:', error));
-            }
+            fetch(`/dashboard_data?filter=custom&start_date=${startDate}&end_date=${endDate}`)
+                .then(response => response.json())
+                .then(data => initializeCharts(data));
         });
 
-        // Initialize charts on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            fetch(`/dashboard_data?filter=today`)
-                .then(response => response.json())
-                .then(data => {
-                    console.log("Data fetched for today:", data);  // Debugging log
-                    initializeCharts(data);
-                    // Update total orders and total profit for today
-                    document.getElementById('total-orders').textContent = data.total_orders;
-                    document.getElementById('total-profit').textContent = data.total_profit.toFixed(2);
-                })
-                .catch(error => console.error('Error fetching data:', error));
-        });
+        // Initial chart setup
+        fetch('/dashboard_data?filter=today')
+            .then(response => response.json())
+            .then(data => initializeCharts(data));
     </script>
 </body>
 </html>

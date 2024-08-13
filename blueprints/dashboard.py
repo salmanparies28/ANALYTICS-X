@@ -6,6 +6,26 @@ from datetime import datetime, timedelta
 
 dashboard_bp = Blueprint('dashboard', __name__)
 
+def get_date_range(filter_type):
+    end_date = datetime.today().date()
+    if filter_type == 'today':
+        start_date = end_date
+    elif filter_type == 'week':
+        start_date = end_date - timedelta(days=7)
+    elif filter_type == 'month':
+        start_date = end_date - timedelta(days=30)
+    elif filter_type == 'year':
+        start_date = end_date - timedelta(days=365)
+    else:
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
+        if start_date and end_date:
+            start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+            end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+        else:
+            start_date = end_date
+    return start_date, end_date
+
 @dashboard_bp.route('/dashboard')
 def dashboard():
     organisation_id = session.get('organisation_id')
@@ -30,28 +50,6 @@ def dashboard_data():
 
     chart_data = get_chart_data(organisation_id, start_date, end_date)
     return jsonify(chart_data)
-
-def get_date_range(filter_type):
-    end_date = datetime.today()
-    if filter_type == 'today':
-        start_date = end_date
-    elif filter_type == 'week':
-        start_date = end_date - timedelta(days=7)
-    elif filter_type == 'month':
-        start_date = end_date - timedelta(days=30)
-    elif filter_type == 'year':
-        start_date = end_date - timedelta(days=365)
-    else:
-        # Custom date range logic
-        start_date = request.args.get('start_date')
-        end_date = request.args.get('end_date')
-        if start_date and end_date:
-            start_date = datetime.strptime(start_date, '%Y-%m-%d')
-            end_date = datetime.strptime(end_date, '%Y-%m-%d')
-        else:
-            start_date = end_date
-    print(f"Fetching data for date range: {start_date} to {end_date}")  # Debug info
-    return start_date, end_date
 
 def get_chart_data(organisation_id, start_date, end_date):
     # Fetch and process data for product categories
