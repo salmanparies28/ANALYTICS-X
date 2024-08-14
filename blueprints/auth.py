@@ -278,3 +278,31 @@ def new_forgot_password():
         else:
             flash('No account found with that email and phone number combination.', 'danger')
     return render_template('new_forgot_password.html')
+
+@auth_bp.route('/update_whatsapp', methods=['POST'])
+def update_whatsapp():
+    if 'organisation_id' not in session:
+        flash('You must be logged in to update your WhatsApp number.', 'danger')
+        return redirect(url_for('auth.login'))
+
+    user = Organisation.query.get(session['organisation_id'])
+    if not user:
+        flash('User not found!', 'danger')
+        return redirect(url_for('auth.login'))
+
+    whatsapp_number = request.form['whatsapp_number']
+
+    # Update the user's WhatsApp number
+    user.whatsapp_number = whatsapp_number
+
+    try:
+        db.session.commit()
+        message = 'WhatsApp number updated successfully!'
+        category = 'success'
+    except Exception as e:
+        db.session.rollback()
+        message = 'An error occurred while updating the WhatsApp number.'
+        category = 'danger'
+
+    return render_template('settings.html', user=user, message=message, category=category, form='updateWhatsApp')
+

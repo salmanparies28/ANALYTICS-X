@@ -22,6 +22,24 @@
         .form-container {
             display: none;
         }
+
+        /* Custom button styles */
+        .btn-custom-shop {
+            background-color: #465dc4; /* Green */
+            color: white;
+        }
+
+        .btn-custom-password {
+            background-color: #465dc4; /* Red */
+            color: white;
+        }
+
+        .btn-custom-whatsapp {
+            background-color: #465dc4; /* A different shade of orange */
+            color: white;
+        }
+
+        
     </style>
     <script>
         function showForm(formId) {
@@ -131,6 +149,24 @@
                 </div>
             </div>
         </div>
+
+        
+        <!-- WhatsApp Number Section -->
+        <div class="settings-container">
+            <button id="updateWhatsAppButton" class="btn btn-custom-whatsapp settings-button" onclick="showForm('updateWhatsAppForm')">Add WhatsApp Number</button>
+            <div id="updateWhatsAppButton-message" style="display:none;"></div>
+
+            <div id="updateWhatsAppForm" class="form-container">
+                <form action="{{ url_for('auth.update_whatsapp') }}" method="post">
+                    <h2>WhatsApp Number</h2>
+                    <label for="whatsapp_number">WhatsApp Number:</label>
+                    <input type="text" name="whatsapp_number" value="{{ user.whatsapp_number }}" required class="form-control"><br>
+
+                    <input type="submit" class="btn btn-success" name="update_whatsapp" value="Update WhatsApp Number">
+                </form>
+            </div>
+        </div>
+
         
     <script>
         // Call the showMessage function if there's a message

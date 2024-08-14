@@ -28,6 +28,7 @@ class Organisation(db.Model):
     transaction_records = db.relationship('TransactionRecord', backref='organisation', lazy=True)
     customers = db.relationship('Customer', backref='organisation', lazy=True)
     inventories = db.relationship('Inventory', backref='organisation', lazy=True)
+    whatsapp_number = db.Column(db.String(20), nullable=True) 
 
 
 
