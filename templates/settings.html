@@ -157,7 +157,7 @@
             <div id="updateWhatsAppButton-message" style="display:none;"></div>
 
             <div id="updateWhatsAppForm" class="form-container">
-                <form action="{{ url_for('auth.update_whatsapp') }}" method="post">
+                <form name="whatsappForm" action="{{ url_for('auth.update_whatsapp') }}" method="post">
                     <h2>WhatsApp Number</h2>
                     <label for="whatsapp_number">WhatsApp Number:</label>
                     <input type="text" name="whatsapp_number" value="{{ user.whatsapp_number }}" required class="form-control"><br>
@@ -167,6 +167,23 @@
             </div>
         </div>
 
+        <script>
+            function validateWhatsAppNumber() {
+                var whatsappNumber = document.forms["whatsappForm"]["whatsapp_number"].value;
+                var regex = /^[0-9]{10}$/;
+        
+                if (!regex.test(whatsappNumber)) {
+                    alert("Please enter a valid 10-digit WhatsApp number.");
+                    return false;
+                }
+                return true;
+            }
+        
+            // Attach the validation function to the WhatsApp form submission
+            document.getElementById('updateWhatsAppForm').onsubmit = function() {
+                return validateWhatsAppNumber();
+            };
+        </script>
         
     <script>
         // Call the showMessage function if there's a message
