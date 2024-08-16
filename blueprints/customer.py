@@ -14,9 +14,10 @@ def add_customer():
         district = request.form['district']
         state = request.form['state']
         email = request.form['email']
+        flat_no = request.form['flat_no']
+        street = request.form['street']
 
         organisation_id = session.get('organisation_id')
-        user_email = session.get('user_email')
         if not organisation_id:
             flash('User is not logged in!', 'danger')
             return redirect(url_for('auth.login'))
@@ -29,6 +30,8 @@ def add_customer():
             state=state,
             pincode=pincode,
             email=email,
+            flat_no=flat_no,
+            street=street,
             organisation_id=organisation_id
         )
         
@@ -39,7 +42,6 @@ def add_customer():
         return redirect(url_for('auth.home'))
     
     return render_template('add_customer.html')
-
 
 
 @customer_bp.route('/view_customers')
@@ -57,7 +59,6 @@ def view_customers():
 def edit_customer(id):
     customer = Customer.query.get_or_404(id)
     organisation_id = session.get('organisation_id')
-    user_email = session.get('user_email')
     if not organisation_id:
         flash('User is not logged in!', 'danger')
         return redirect(url_for('auth.login'))
@@ -70,6 +71,8 @@ def edit_customer(id):
         customer.district = request.form['district']
         customer.state = request.form['state']
         customer.email = request.form['email']
+        customer.flat_no = request.form['flat_no']
+        customer.street = request.form['street']
         
         db.session.commit()
         

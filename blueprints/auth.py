@@ -30,7 +30,7 @@ def fetch_pincode_details():
     if pincode in pincode_data:
         return jsonify(pincode_data[pincode])
     else:
-        return jsonify({'error': 'Pincode not found'}), 404
+        return jsonify({'error': 'Pincode not found'})
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
@@ -292,6 +292,11 @@ def update_whatsapp():
 
     whatsapp_number = request.form['whatsapp_number']
 
+    # Backend validation to ensure exactly 10 digits
+    if not whatsapp_number.isdigit() or len(whatsapp_number) != 10:
+        flash('Please enter a valid 10-digit WhatsApp number.', 'danger')
+        return redirect(url_for('auth.settings'))
+
     # Update the user's WhatsApp number
     user.whatsapp_number = whatsapp_number
 
@@ -305,4 +310,3 @@ def update_whatsapp():
         category = 'danger'
 
     return render_template('settings.html', user=user, message=message, category=category, form='updateWhatsApp')
-
