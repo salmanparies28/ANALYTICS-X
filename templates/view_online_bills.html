@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Online Bills</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div class="container mx-auto mt-10">
+        <h1 class="text-3xl font-bold mb-5">View Online Bills</h1>
+        <table class="min-w-full bg-white">
+            <thead>
+                <tr>
+                    <th class="py-2">Bill Number</th>
+                    <th class="py-2">Customer Name</th>
+                    <th class="py-2">Phone</th>
+                    <th class="py-2">Total Price</th>
+                    <th class="py-2">Date</th>
+                    <th class="py-2">Products</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bill in bills %}
+                <tr>
+                    <td class="py-2 text-center">{{ bill.bill_no }}</td>
+                    <td class="py-2 text-center">{{ customers[bill.customer_id].name }}</td>
+                    <td class="py-2 text-center">{{ customers[bill.customer_id].phone }}</td>
+                    <td class="py-2 text-center">{{ bill.total_price }}</td>
+                    <td class="py-2 text-center">{{ bill.date }}</td>
+                    <td class="py-2">
+                        <ul>
+                            {% for item in bill_items_dict[bill.id] %}
+                            <li>{{ item.product_name }} ({{ item.quantity }})</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

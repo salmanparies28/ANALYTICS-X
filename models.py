@@ -28,8 +28,7 @@ class Organisation(db.Model):
     transaction_records = db.relationship('TransactionRecord', backref='organisation', lazy=True)
     customers = db.relationship('Customer', backref='organisation', lazy=True)
     inventories = db.relationship('Inventory', backref='organisation', lazy=True)
-    whatsapp_number = db.Column(db.String(20), nullable=True) 
-
+    whatsapp_number = db.Column(db.String(20), nullable=True)
 
 
 class ProductCategory(db.Model):
@@ -51,7 +50,6 @@ class Product(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('product_category.id'), nullable=True)  # Allow null if category not mandatory
     inventory = db.relationship('Inventory', backref='product', lazy=True)
 
-
     def restock(self, additional_quantity):
         self.quantity += additional_quantity
         db.session.commit()
@@ -68,6 +66,7 @@ class TransactionRecord(db.Model):
     bill_no = db.Column(db.Integer, unique=True, nullable=False)
     date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
     total_price = db.Column(db.Float, nullable=False)
+    billing_mode = db.Column(db.String(10), nullable=False)  # New field to store 'online' or 'offline'
     organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=True)  # Allow null if no customer info
     items = db.relationship('TransactionItem', backref='transaction', lazy=True)

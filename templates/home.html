@@ -112,16 +112,46 @@
           </a>
         </li>
         <li>
-          <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/create_bill', this)">
+          <button class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="toggleDropdown('billing-dropdown')">
             <i class="fas fa-file-invoice w-6 h-6 text-gray-500"></i>
-            <span class="ml-3">Billing</span>
-          </a>
+            <span class="ml-3 pr-24">Billing</span>
+            <i class="fas fa-chevron-down ml-auto"></i>
+          </button>
+          <ul id="billing-dropdown" class="hidden ml-6 space-y-2 dropdown">
+            <li>
+              <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/create_online_bill', this)">
+                <i class="fas fa-globe w-6 h-6 text-gray-500"></i>
+                <span class="ml-3">Online Billing</span>
+              </a>
+            </li>
+            <li>
+              <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/create_offline_bill', this)">
+                <i class="fas fa-store w-6 h-6 text-gray-500"></i>
+                <span class="ml-3">Offline Billing</span>
+              </a>
+            </li>
+          </ul>
         </li>
         <li>
-          <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/view_bills', this)">
+          <button class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="toggleDropdown('transactions-dropdown')">
             <i class="fas fa-file-alt w-6 h-6 text-gray-500"></i>
-            <span class="ml-3">Transactions</span>
-          </a>
+            <span class="ml-3 pr-20">Transactions</span>
+            <i class="fas fa-chevron-down ml-auto"></i>
+          </button>
+          <ul id="transactions-dropdown" class="hidden ml-6 space-y-2 dropdown">
+            <li>
+              <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/view_online_bills', this)">
+                <i class="fas fa-globe w-6 h-6 text-gray-500"></i>
+                <span class="ml-3">View Online Bills</span>
+              </a>
+            </li>
+            <li>
+              <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/view_offline_bills', this)">
+                <i class="fas fa-store w-6 h-6 text-gray-500"></i>
+                <span class="ml-3">View Offline Bills</span>
+              </a>
+            </li>
+          </ul>
         </li>
         <li>
           <button class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="toggleDropdown('product-dropdown')">
