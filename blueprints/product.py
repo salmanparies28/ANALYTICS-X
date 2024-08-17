@@ -165,6 +165,7 @@ def inventory():
      .outerjoin(ProductCategory, Product.category_id == ProductCategory.id)\
      .filter(Product.organisation_id == organisation_id).all()
 
+    return render_template('inventory.html',products=products, inventories=inventories)
     
 
 @product_bp.route('/edit_category/<int:category_id>', methods=['GET', 'POST'])
