@@ -82,7 +82,7 @@ class TransactionItem(db.Model):
 class Customer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    phone = db.Column(db.String(15), nullable=False)
+    phone = db.Column(db.String(50), nullable=False)
     city = db.Column(db.String(100))
     district = db.Column(db.String(100))
     state = db.Column(db.String(100))
