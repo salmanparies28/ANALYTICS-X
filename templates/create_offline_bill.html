@@ -5,28 +5,181 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Offline Bill</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+    .flash-message {
+        display: none;
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #4441da;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+    }
+    .fade-in-out {
+        animation: fadeInOut 2s ease-in-out;
+    }
+    @keyframes fadeInOut {
+        0% {
+            opacity: 0;
+        }
+        20%, 80% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0;
+        }
+    }
+    .bounce {
+        animation: bounce 0.3s;
+    }
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+    .form-container {
+        background-color: #f9f9f9; /* Light gray background color for the form */
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        color: #333; /* Dark text for contrast inside the form */
+        border: none; /* Remove any border */
+    }
+    .form-container h1, 
+    .form-container label {
+        color: #333; /* Ensure labels and headings are readable */
+    }
+    .form-container input {
+        background-color: rgba(255, 255, 255, 0.8); /* Slightly transparent input background */
+    }
+</style>
+
+<script>
+        function addProductField() {
+            const container = document.createElement('div');
+            container.className = "grid grid-cols-2 gap-4 mt-4 bounce relative";
+
+            const productDiv = document.createElement('div');
+            productDiv.className = "col-span-1";
+
+            const quantityDiv = document.createElement('div');
+            quantityDiv.className = "col-span-1";
+
+            const productLabel = document.createElement('label');
+            productLabel.className = "block text-sm font-medium text-gray-700";
+            productLabel.textContent = "PRODUCT NAME OR SKU";
+            productDiv.appendChild(productLabel);
+
+            const productInput = document.createElement('input');
+            productInput.type = "text";
+            productInput.name = "product_identifier[]";
+            productInput.required = true;
+            productInput.className = "mt-1 block w-full rounded-md border-gray-300 shadow-sm";
+            productDiv.appendChild(productInput);
+
+            const quantityLabel = document.createElement('label');
+            quantityLabel.className = "block text-sm font-medium text-gray-700";
+            quantityLabel.textContent = "QUANTITY";
+            quantityDiv.appendChild(quantityLabel);
+
+            const quantityInput = document.createElement('input');
+            quantityInput.type = "number";
+            quantityInput.name = "quantity[]";
+            quantityInput.required = true;
+            quantityInput.className = "mt-1 block w-full rounded-md border-gray-300 shadow-sm";
+            quantityDiv.appendChild(quantityInput);
+
+            const deleteButton = document.createElement('button');
+            deleteButton.type = "button";
+            deleteButton.className = "absolute top-0 right-0 text-red-500 font-bold";
+            deleteButton.textContent = "X";
+            deleteButton.onclick = function() {
+                container.remove();
+                showFlashMessage("Product field removed!");
+            };
+
+            container.appendChild(productDiv);
+            container.appendChild(quantityDiv);
+            container.appendChild(deleteButton);
+
+            document.getElementById('product-fields').appendChild(container);
+            showFlashMessage("Product field added!");
+        }
+
+        function showFlashMessage(message) {
+            const flashMessage = document.getElementById('flash-message');
+            flashMessage.textContent = message;
+            flashMessage.className = "flash-message fade-in-out";
+            flashMessage.style.display = 'block';
+
+            setTimeout(() => {
+                flashMessage.style.display = 'none';
+            }, 2000); // Display for 2 seconds
+        }
+
+        function handleSubmit(event) {
+            event.preventDefault();
+            showFlashMessage("Bill created successfully!");
+
+            // Delay form submission to allow flash message to be visible
+            setTimeout(() => {
+                event.target.submit();
+            }, 2000); // 2-second delay before submission
+        }
+    </script>
 </head>
-<body class="bg-gray-100 text-gray-800">
-    <div class="container mx-auto mt-10">
-        <h1 class="text-3xl font-bold mb-5">Create Offline Bill</h1>
-        <form action="{{ url_for('billing.create_offline_bill') }}" method="POST" class="bg-white p-6 rounded-lg shadow-lg">
-            <div class="mb-4">
-                <label for="customer_name" class="block text-sm font-medium text-gray-700">Customer Name (Optional)</label>
-                <input type="text" name="customer_name" id="customer_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+<body>
+    <div class="container mx-auto mt-10 form-container">
+        <h1 class="text-3xl font-bold mb-5 text-center">OFFLINE BILLING</h1>
+        <div id="flash-message" class="flash-message"></div>
+        <form action="{{ url_for('billing.create_offline_bill') }}" method="POST" onsubmit="handleSubmit(event)">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="col-span-2">
+                    <label for="customer_phone" class="block text-sm font-medium text-gray-700">CUSTOMER PHONE NUMBER</label>
+                    <input type="text" name="customer_phone" id="customer_phone" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                </div>
+                <div class="col-span-2">
+                    <label for="customer_name" class="block text-sm font-medium text-gray-700">CUSTOMER NAME</label>
+                    <input type="text" name="customer_name" id="customer_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                </div>
             </div>
-            <div class="mb-4">
-                <label for="customer_phone" class="block text-sm font-medium text-gray-700">Customer Phone (Optional)</label>
-                <input type="text" name="customer_phone" id="customer_phone" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+
+            <!-- Product fields -->
+            <div id="product-fields" class="grid grid-cols-2 gap-4 mt-4">
+                <div class="col-span-1">
+                    <label for="product_identifier" class="block text-sm font-medium text-gray-700">PRODUCT NAME OR SKU</label>
+                    <input type="text" name="product_identifier[]" id="product_identifier" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                </div>
+                <div class="col-span-1">
+                    <label for="quantity" class="block text-sm font-medium text-gray-700">QUANTITY</label>
+                    <input type="number" name="quantity[]" id="quantity" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                </div>
             </div>
-            <div class="mb-4">
-                <label for="product_identifier" class="block text-sm font-medium text-gray-700">Product Name or SKU</label>
-                <input type="text" name="product_identifier[]" id="product_identifier" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+
+            <div class="col-span-2 mt-4">
+                <button type="button" onclick="addProductField()" class="text-blue-500 font-medium">ADD ANOTHER PRODUCT</button>
             </div>
-            <div class="mb-4">
-                <label for="quantity" class="block text-sm font-medium text-gray-700">Quantity</label>
-                <input type="number" name="quantity[]" id="quantity" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+
+            <div class="grid grid-cols-2 gap-4 mt-4">
+                <div class="col-span-2">
+                    <label for="salesman_name" class="block text-sm font-medium text-gray-700">SALESMAN NAME</label>
+                    <input type="text" name="salesman_name" id="salesman_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                </div>
+                <div class="col-span-2">
+                    <label for="biller_name" class="block text-sm font-medium text-gray-700">BILLER NAME</label>
+                    <input type="text" name="biller_name" id="biller_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                </div>
             </div>
-            <button type="submit" class="bg-indigo-500 text-white px-4 py-2 rounded-md">Create Bill</button>
+            <div class="flex justify-center mt-6">
+                <button type="submit" class="bg-indigo-500 text-white px-4 py-2 rounded-md">CREATE BILL</button>
+            </div>
         </form>
     </div>
 </body>
