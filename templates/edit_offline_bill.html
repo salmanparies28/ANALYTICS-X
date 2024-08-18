@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Offline Bill</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div class="container mx-auto mt-10">
+        <h1 class="text-3xl font-bold mb-5">Edit Bill #{{ bill.bill_no }}</h1>
+        <form action="{{ url_for('billing.update_offline_bill', bill_id=bill.id) }}" method="POST" class="bg-white p-6 rounded-lg shadow-lg">
+            <table class="min-w-full bg-white">
+                <thead>
+                    <tr>
+                        <th class="py-2">Product Name</th>
+                        <th class="py-2">Quantity</th>
+                        <th class="py-2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in bill_items %}
+                    <tr>
+                        <td class="py-2">
+                            <input type="text" name="product_identifier[]" value="{{ item.product_name }}" class="block w-full rounded-md border-gray-300 shadow-sm">
+                        </td>
+                        <td class="py-2">
+                            <input type="number" name="quantity[]" value="{{ item.quantity }}" class="block w-full rounded-md border-gray-300 shadow-sm">
+                        </td>
+                        <td class="py-2 text-center">
+                            <a href="#" class="text-red-500">Remove</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="mt-4">
+                <button type="submit" class="bg-indigo-500 text-white px-4 py-2 rounded-md">Update Bill</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

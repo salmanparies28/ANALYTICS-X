@@ -9,30 +9,56 @@
 <body class="bg-gray-100 text-gray-800">
     <div class="container mx-auto mt-10">
         <h1 class="text-3xl font-bold mb-5">View Offline Bills</h1>
-        <table class="min-w-full bg-white">
+
+        <!-- Search Form -->
+        <form method="GET" action="{{ url_for('billing.search_offline_bill') }}" class="mb-5">
+            <label for="bill_no" class="block text-sm font-medium text-gray-700">Search by Bill Number:</label>
+            <div class="flex">
+                <input type="text" name="bill_no" id="bill_no" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="Enter Bill Number" required>
+                <button type="submit" class="ml-2 bg-indigo-500 text-white px-4 py-2 rounded-md">Search</button>
+            </div>
+        </form>
+
+        <table class="min-w-full bg-white border-collapse">
             <thead>
                 <tr>
-                    <th class="py-2">Bill Number</th>
-                    <th class="py-2">Total Price</th>
-                    <th class="py-2">Date</th>
-                    <th class="py-2">Products</th>
+                    <th class="py-2 border border-gray-300">Bill Number</th>
+                    <th class="py-2 border border-gray-300">Date</th>
+                    <th class="py-2 border border-gray-300">Products</th>
+                    <th class="py-2 border border-gray-300">Total Price</th>
+                    <th class="py-2 border border-gray-300">Actions</th>
                 </tr>
             </thead>
             <tbody>
-                {% for bill in bills %}
-                <tr>
-                    <td class="py-2 text-center">{{ bill.bill_no }}</td>
-                    <td class="py-2 text-center">{{ bill.total_price }}</td>
-                    <td class="py-2 text-center">{{ bill.date }}</td>
-                    <td class="py-2">
-                        <ul>
-                            {% for item in bill_items_dict[bill.id] %}
-                            <li>{{ item.product_name }} ({{ item.quantity }})</li>
-                            {% endfor %}
-                        </ul>
-                    </td>
-                </tr>
-                {% endfor %}
+                {% if bills %}
+                    {% for bill in bills %}
+                    <tr>
+                        <td class="py-2 text-center border border-gray-300">{{ bill.bill_no }}</td>
+                        <td class="py-2 text-center border border-gray-300">{{ bill.date }}</td>
+                        
+                        <td class="py-2 border border-gray-300">
+                            <ul>
+                                {% for item in bill_items_dict[bill.id] %}
+                                <li>
+                                    {{ item.product_name }}
+                                    {% if item.quantity and item.quantity > 0 %}
+                                        ({{ item.quantity }})
+                                    {% endif %}
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                        <td class="py-2 text-center border border-gray-300">{{ bill.total_price }}</td>
+                        <td class="py-2 text-center border border-gray-300">
+                            <a href="{{ url_for('billing.edit_offline_bill', bill_id=bill.id) }}" class="text-blue-500">Edit</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="py-2 text-center border border-gray-300">No bills found.</td>
+                    </tr>
+                {% endif %}
             </tbody>
         </table>
     </div>

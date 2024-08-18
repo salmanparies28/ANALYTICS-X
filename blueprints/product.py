@@ -27,7 +27,7 @@ def add_category():
         new_category = ProductCategory(name=name, organisation_id=organisation_id)
         db.session.add(new_category)
         db.session.commit()
-        return redirect(url_for('product.add_category'))
+        return redirect(url_for('auth.home'))
     
     return render_template('category.html')
 
@@ -165,7 +165,8 @@ def inventory():
      .outerjoin(ProductCategory, Product.category_id == ProductCategory.id)\
      .filter(Product.organisation_id == organisation_id).all()
 
-    return render_template('inventory.html', products=products, inventories=inventories)
+    return render_template('inventory.html',products=products, inventories=inventories)
+    
 
 @product_bp.route('/edit_category/<int:category_id>', methods=['GET', 'POST'])
 def edit_category(category_id):
