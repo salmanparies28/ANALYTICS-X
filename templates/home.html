@@ -54,11 +54,7 @@
       });
     }
 
-    function logout() {
-      if (confirm('Are you sure you want to log out?')) {
-        window.location.href = '/logout';
-      }
-    }
+    
 
     document.addEventListener('DOMContentLoaded', () => {
       loadContent('/dashboard', document.getElementById('dashboard-link'));
@@ -90,13 +86,6 @@
   </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
-
-  <!-- Top Right Buttons -->
-  <div class="top-right-buttons">
-    <button type="button" onclick="logout()" class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200">
-      <i class="fas fa-sign-out-alt w-6 h-6"></i>
-    </button>
-  </div>
 
   <!-- Sidebar -->
   <aside id="default-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0 sidebar" aria-label="Sidebar">
