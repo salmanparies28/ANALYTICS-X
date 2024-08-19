@@ -6,62 +6,62 @@
     <title>Create Offline Bill</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-    .flash-message {
-        display: none;
-        position: fixed;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: #4441da;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 5px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        z-index: 1000;
-    }
-    .fade-in-out {
-        animation: fadeInOut 2s ease-in-out;
-    }
-    @keyframes fadeInOut {
-        0% {
-            opacity: 0;
+        .flash-message {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4441da;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
         }
-        20%, 80% {
-            opacity: 1;
+        .fade-in-out {
+            animation: fadeInOut 2s ease-in-out;
         }
-        100% {
-            opacity: 0;
+        @keyframes fadeInOut {
+            0% {
+                opacity: 0;
+            }
+            20%, 80% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
         }
-    }
-    .bounce {
-        animation: bounce 0.3s;
-    }
-    @keyframes bounce {
-        0%, 100% {
-            transform: translateY(0);
+        .bounce {
+            animation: bounce 0.3s;
         }
-        50% {
-            transform: translateY(-10px);
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
         }
-    }
-    .form-container {
-        background-color: #f9f9f9; /* Light gray background color for the form */
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-        color: #333; /* Dark text for contrast inside the form */
-        border: none; /* Remove any border */
-    }
-    .form-container h1, 
-    .form-container label {
-        color: #333; /* Ensure labels and headings are readable */
-    }
-    .form-container input {
-        background-color: rgba(255, 255, 255, 0.8); /* Slightly transparent input background */
-    }
-</style>
+        .form-container {
+            background-color: #f9f9f9; /* Light gray background color for the form */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            color: #333; /* Dark text for contrast inside the form */
+            border: none; /* Remove any border */
+        }
+        .form-container h1, 
+        .form-container label {
+            color: #333; /* Ensure labels and headings are readable */
+        }
+        .form-container input {
+            background-color: rgba(255, 255, 255, 0.8); /* Slightly transparent input background */
+        }
+    </style>
 
-<script>
+    <script>
         function addProductField() {
             const container = document.createElement('div');
             container.className = "grid grid-cols-2 gap-4 mt-4 bounce relative";

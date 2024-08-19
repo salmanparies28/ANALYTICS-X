@@ -24,29 +24,14 @@
         }
 
         /* Custom button styles */
-        .btn-custom-shop {
+        .btn-custom-shop, .btn-custom-password, .btn-custom-whatsapp, .btn-logout {
             background-color: #465dc4;
             color: white;
         }
 
-        .btn-custom-password {
-            background-color: #465dc4;
-            color: white;
-        }
-
-        .btn-custom-whatsapp {
-            background-color: #465dc4;
-            color: white;
-        }
-        
         .logout-container {
             margin-top: 25px;
             text-align: center;
-        }
-
-        .btn-logout {
-            background-color: #465dc4;
-            color: white;
         }
     </style>
     <script>
@@ -84,10 +69,12 @@
             return true;
         }
 
-        // Attach the validation function to the WhatsApp form submission
-        document.getElementById('updateWhatsAppForm').onsubmit = function() {
-            return validateWhatsAppNumber();
-        };
+        document.addEventListener('DOMContentLoaded', function() {
+            // Attach the validation function to the WhatsApp form submission
+            document.getElementById('updateWhatsAppForm').onsubmit = function() {
+                return validateWhatsAppNumber();
+            };
+        });
     </script>
 </head>
 <body>
@@ -102,31 +89,75 @@
             <div id="updateShopForm" class="form-container">
                 <form action="{{ url_for('auth.settings') }}" method="post">
                     <h2>Shop Details</h2>
-                    <!-- Your shop information fields -->
                     <label for="shop_name">Shop Name:</label>
                     <input type="text" name="shop_name" value="{{ user.shop_name }}" required class="form-control"><br>
-                    <!-- Other fields go here -->
+
+                    <label for="flatno">Flat No:</label>
+                    <input type="text" name="flatno" value="{{ user.flatno }}" required class="form-control"><br>
+
+                    <label for="street">Street:</label>
+                    <input type="text" name="street" value="{{ user.street }}" required class="form-control"><br>
+
+                    <label for="city">City:</label>
+                    <input type="text" name="city" value="{{ user.city }}" required class="form-control"><br>
+
+                    <label for="district">District:</label>
+                    <input type="text" name="district" value="{{ user.district }}" required class="form-control"><br>
+
+                    <label for="state">State:</label>
+                    <input type="text" name="state" value="{{ user.state }}" required class="form-control"><br>
+
+                    <label for="country">Country:</label>
+                    <input type="text" name="country" value="{{ user.country }}" required class="form-control"><br>
+
+                    <label for="pincode">Pincode:</label>
+                    <input type="text" name="pincode" value="{{ user.pincode }}" required class="form-control"><br>
+
+                    <label for="mobile_number">Mobile Number:</label>
+                    <input type="text" name="mobile_number" value="{{ user.mobile_number }}" required class="form-control"><br>
+
+                    <label for="landline_number">Landline Number (Optional):</label>
+                    <input type="text" name="landline_number" value="{{ user.landline_number }}" class="form-control"><br>
+
+                    <label for="website_address">Website Address (Optional):</label>
+                    <input type="text" name="website_address" value="{{ user.website_address }}" class="form-control"><br>
+
+                    <label for="gst_number">GST Number (Optional):</label>
+                    <input type="text" name="gst_number" value="{{ user.gst_number }}" class="form-control"><br>
+
+                    <label for="company_size">Company Size:</label>
+                    <input type="text" name="company_size" value="{{ user.company_size }}" required class="form-control"><br>
+
                     <input type="submit" class="btn btn-success" name="update_shop" value="Update Shop Details">
                 </form>
             </div>
         </div>
 
-        <!-- Password Update Section -->
-        <div class="settings-container">
-            <button id="updatePasswordButton" class="btn btn-secondary settings-button" onclick="showForm('updatePasswordForm')">Update Password</button>
-            <div id="updatePasswordButton-message" style="display:none;"></div>
 
+         <!-- Password Update Section -->
+         <div class="settings-container">
+            <button id="updatePasswordButton" class="btn btn-secondary settings-button" onclick="showForm('updatePasswordForm')">Update Password</button>
+            
+            <div id="updatePasswordButton-message" style="display:none;"></div>
+        
             <div id="updatePasswordForm" class="form-container">
                 <form action="{{ url_for('auth.update_password') }}" method="post">
                     <h2>Update Password</h2>
                     <label for="old_password">Old Password:</label>
                     <input type="password" name="old_password" required class="form-control"><br>
-                    <!-- Other password fields go here -->
+        
+                    <label for="new_password">New Password:</label>
+                    <input type="password" name="new_password" required class="form-control"><br>
+        
+                    <label for="confirm_password">Confirm New Password:</label>
+                    <input type="password" name="confirm_password" required class="form-control"><br>
+        
                     <input type="submit" class="btn btn-success" name="update_password" value="Update Password">
                 </form>
                 <!-- Forget Password Button -->
                 <div class="mt-3">
                     <a href="{{ url_for('auth.new_forgot_password') }}" class="btn btn-link">Forget Password?</a>
+
                 </div>
             </div>
         </div>
