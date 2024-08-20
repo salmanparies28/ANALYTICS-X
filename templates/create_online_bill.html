@@ -8,7 +8,14 @@
 </head>
 <body class="bg-gray-100 text-gray-800">
     <div class="container mx-auto mt-10">
-        <h1 class="text-3xl font-bold mb-5">Create Online Bill</h1>
+        <div class="flex justify-between items-center mb-5">
+            <div>
+                <h1 class="text-3xl font-bold">Create Online Bill</h1>
+            </div>
+            <div>
+                <span class="text-xl font-semibold text-gray-700">Bill Number: {{ bill_number }}</span>
+            </div>
+        </div>
         <form action="{{ url_for('billing.create_online_bill') }}" method="POST" class="bg-white p-6 rounded-lg shadow-lg">
             <div class="mb-4">
                 <label for="customer_name" class="block text-sm font-medium text-gray-700">Customer Name</label>
