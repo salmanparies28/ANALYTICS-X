@@ -50,6 +50,31 @@ def add_customer():
 
     return render_template('add_customer.html', existing_phone=False)
 
+@customer_bp.route('/get_customer_details', methods=['POST'])
+def get_customer_details():
+    phone = request.form.get('phone')
+    organisation_id = session.get('organisation_id')
+
+    if not organisation_id:
+        return jsonify({'error': 'User is not logged in!'}), 401
+
+    customer = Customer.query.filter_by(phone=phone, organisation_id=organisation_id).first()
+
+    if customer:
+        return jsonify({
+            'exists': True,
+            'name': customer.name,
+            'city': customer.city,
+            'district': customer.district,
+            'state': customer.state,
+            'pincode': customer.pincode,
+            'flat_no': customer.flat_no,
+            'street': customer.street,
+            'email': customer.email
+        })
+    else:
+        return jsonify({'exists': False})
+
 
 @customer_bp.route('/view_customers')
 def view_customers():
