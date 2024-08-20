@@ -74,7 +74,9 @@ def add_product():
         db.session.add(new_inventory)
         db.session.commit()
 
-        return redirect(url_for('product.view_products'))
+        flash('Product added successfully!', 'success')  # Flash success message
+        return redirect(url_for('product.add_product'))  # Stay on the same page to see the flash message
+
     return render_template('add_product.html', categories=categories)
 
 @product_bp.route('/view_products')
@@ -228,3 +230,5 @@ def check_sku():
 
     exists = Product.query.filter_by(SKU=sku, organisation_id=organisation_id).first() is not None
     return jsonify({'exists': exists})
+ 
+
