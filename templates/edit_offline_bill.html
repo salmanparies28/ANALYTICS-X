@@ -15,7 +15,6 @@
                     <tr>
                         <th class="py-2">Product Name</th>
                         <th class="py-2">Quantity</th>
-                        <th class="py-2">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -26,9 +25,6 @@
                         </td>
                         <td class="py-2">
                             <input type="number" name="quantity[]" value="{{ item.quantity }}" class="block w-full rounded-md border-gray-300 shadow-sm">
-                        </td>
-                        <td class="py-2 text-center">
-                            <a href="#" class="text-red-500">Remove</a>
                         </td>
                     </tr>
                     {% endfor %}

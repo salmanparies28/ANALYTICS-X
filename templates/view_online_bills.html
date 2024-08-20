@@ -24,8 +24,20 @@
                 {% for bill in bills %}
                 <tr>
                     <td class="py-2 text-center">{{ bill.bill_no }}</td>
-                    <td class="py-2 text-center">{{ customers[bill.customer_id].name }}</td>
-                    <td class="py-2 text-center">{{ customers[bill.customer_id].phone }}</td>
+                    <td class="py-2 text-center">
+                        {% if customers[bill.customer_id] %}
+                            {{ customers[bill.customer_id].name }}
+                        {% else %}
+                            Unknown Customer
+                        {% endif %}
+                    </td>
+                    <td class="py-2 text-center">
+                        {% if customers[bill.customer_id] %}
+                            {{ customers[bill.customer_id].phone }}
+                        {% else %}
+                            Unknown Phone
+                        {% endif %}
+                    </td>
                     <td class="py-2 text-center">{{ bill.total_price }}</td>
                     <td class="py-2 text-center">{{ bill.date }}</td>
                     <td class="py-2">
