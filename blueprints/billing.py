@@ -19,6 +19,8 @@ def create_online_bill():
             customer_district = request.form.get('customer_district', '')
             customer_state = request.form.get('customer_state', '')
             customer_pincode = request.form['customer_pincode']
+            customer_flat = request.form.get('customer_flat', '')
+            customer_street = request.form.get('customer_street', '')
 
             product_identifiers = request.form.getlist('product_identifier[]')
             quantities = request.form.getlist('quantity[]')
@@ -28,9 +30,10 @@ def create_online_bill():
                 flash('Product identifier and quantity are required.', 'danger')
                 return redirect(url_for('billing.create_online_bill'))
 
-            # Create or find the customer
-            customer = Customer.query.filter_by(phone=customer_phone).first()
+            # Check if the customer already exists
+            customer = Customer.query.filter_by(phone=customer_phone, organisation_id=organisation_id).first()
             if not customer:
+                # Create a new customer only if they do not exist
                 customer = Customer(
                     name=customer_name,
                     phone=customer_phone,
@@ -38,6 +41,8 @@ def create_online_bill():
                     district=customer_district,
                     state=customer_state,
                     pincode=customer_pincode,
+                    flat_no=customer_flat,
+                    street=customer_street,
                     organisation_id=organisation_id
                 )
                 db.session.add(customer)
@@ -86,16 +91,19 @@ def create_online_bill():
                 ))
 
             db.session.commit()
+
+            # Debugging print statement
+            print(f"Redirecting to view_temporary_bill with bill_id={new_bill.id}")
+
             flash('Online bill created successfully! Please review the bill before finalizing.', 'success')
             return redirect(url_for('billing.view_temporary_bill', bill_id=new_bill.id))
         except Exception as e:
             flash(f"Error: {str(e)}", 'danger')
             return redirect(url_for('billing.create_online_bill'))
 
-    # Get request: render the create online bill page with a new bill number
+    # Handle GET request: render the create online bill page
     bill_number = generate_bill_number()
     return render_template('create_online_bill.html', bill_number=bill_number)
-
 
 
 
@@ -148,6 +156,7 @@ def view_temporary_bill(bill_id):
     ).all()
 
     return render_template('view_temporary_bill.html', bill=bill, customer=customer, bill_items=bill_items)
+
 
 
 
