@@ -9,6 +9,7 @@ UPLOAD_FOLDER = 'static/uploads'
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
+# Category Routes
 @product_bp.route('/add_category', methods=['GET', 'POST'])
 def add_category():
     organisation_id = session.get('organisation_id')
@@ -21,13 +22,14 @@ def add_category():
         name = request.form['name']
         existing_category = ProductCategory.query.filter_by(name=name, organisation_id=organisation_id).first()
         if existing_category:
-            flash('Category name is already in use!', 'danger')
-            return render_template('category.html', error_message="Category name is already in use.")
+              flash('Category name is already in use!', 'danger')
+              return render_template('category.html', categories=ProductCategory.query.filter_by(organisation_id=organisation_id).all())  # Render the same page
         
         new_category = ProductCategory(name=name, organisation_id=organisation_id)
         db.session.add(new_category)
         db.session.commit()
-        return redirect(url_for('auth.home'))
+        flash('Category added successfully!', 'success')
+        return redirect(url_for('product.view_categories'))
     
     return render_template('category.html')
 
@@ -42,6 +44,57 @@ def view_categories():
     categories = ProductCategory.query.filter_by(organisation_id=organisation_id).all()
     return render_template('category.html', categories=categories)
 
+@product_bp.route('/edit_category/<int:category_id>', methods=['GET', 'POST'])
+def edit_category(category_id):
+    category = ProductCategory.query.get_or_404(category_id)
+    organisation_id = session.get('organisation_id')
+    user_email = session.get('user_email')
+    if not organisation_id:
+        flash('User is not logged in!', 'danger')
+        return redirect(url_for('auth.login'))
+
+    if request.method == 'POST':
+        new_name = request.form['name']
+        
+        # Check if new category name already exists
+        existing_category = ProductCategory.query.filter_by(name=new_name, organisation_id=organisation_id).first()
+        if existing_category and existing_category.id != category.id:
+            flash('Category name is already in use!', 'danger')
+            return render_template('edit_category.html', category=category, error_message="Category name is already in use.")
+        
+        category.name = new_name
+        db.session.commit()
+        flash('Category updated successfully!', 'success')
+        return redirect(url_for('product.view_categories'))
+    return render_template('edit_category.html', category=category)
+
+@product_bp.route('/delete_category/<int:category_id>', methods=['POST'])
+def delete_category(category_id):
+    category = ProductCategory.query.get_or_404(category_id)
+    organisation_id = session.get('organisation_id')
+    user_email = session.get('user_email')
+    if not organisation_id:
+        flash('User is not logged in!', 'danger')
+        return redirect(url_for('auth.login'))
+
+    db.session.delete(category)
+    db.session.commit()
+    flash('Category deleted successfully!', 'success')
+    return redirect(url_for('product.view_categories'))
+
+@product_bp.route('/check_category', methods=['POST'])
+def check_category():
+    name = request.form.get('name')
+    organisation_id = session.get('organisation_id')
+    user_email = session.get('user_email')
+
+    if not organisation_id:
+        return jsonify({'exists': False})
+
+    exists = ProductCategory.query.filter_by(name=name, organisation_id=organisation_id).first() is not None
+    return jsonify({'exists': exists})
+
+# Product Routes
 @product_bp.route('/add_product', methods=['GET', 'POST'])
 def add_product():
     organisation_id = session.get('organisation_id')
@@ -74,8 +127,8 @@ def add_product():
         db.session.add(new_inventory)
         db.session.commit()
 
-        flash('Product added successfully!', 'success')  # Flash success message
-        return redirect(url_for('product.add_product'))  # Stay on the same page to see the flash message
+        flash('Product added successfully!', 'success')
+        return redirect(url_for('product.add_product'))
 
     return render_template('add_product.html', categories=categories)
 
@@ -136,6 +189,18 @@ def delete_product(product_id):
 
     return redirect(url_for('product.view_products'))
 
+@product_bp.route('/check_sku', methods=['POST'])
+def check_sku():
+    sku = request.form.get('SKU')
+    organisation_id = session.get('organisation_id')
+    user_email = session.get('user_email')
+    if not organisation_id:
+        return jsonify({'exists': False})
+
+    exists = Product.query.filter_by(SKU=sku, organisation_id=organisation_id).first() is not None
+    return jsonify({'exists': exists})
+
+# Inventory Routes
 @product_bp.route('/inventory', methods=['GET', 'POST'])
 def inventory():
     organisation_id = session.get('organisation_id')
@@ -168,67 +233,3 @@ def inventory():
      .filter(Product.organisation_id == organisation_id).all()
 
     return render_template('inventory.html',products=products, inventories=inventories)
-    
-
-@product_bp.route('/edit_category/<int:category_id>', methods=['GET', 'POST'])
-def edit_category(category_id):
-    category = ProductCategory.query.get_or_404(category_id)
-    organisation_id = session.get('organisation_id')
-    user_email = session.get('user_email')
-    if not organisation_id:
-        flash('User is not logged in!', 'danger')
-        return redirect(url_for('auth.login'))
-
-    if request.method == 'POST':
-        new_name = request.form['name']
-        
-        # Check if new category name already exists
-        existing_category = ProductCategory.query.filter_by(name=new_name, organisation_id=organisation_id).first()
-        if existing_category and existing_category.id != category.id:
-            flash('Category name is already in use!', 'danger')
-            return render_template('edit_category.html', category=category, error_message="Category name is already in use.")
-        
-        category.name = new_name
-        db.session.commit()
-        flash('Category updated successfully!', 'success')
-        return redirect(url_for('product.view_categories'))
-    return render_template('edit_category.html', category=category)
-
-@product_bp.route('/check_category', methods=['POST'])
-def check_category():
-    name = request.form.get('name')
-    organisation_id = session.get('organisation_id')
-    user_email = session.get('user_email')
-
-    if not organisation_id:
-        return jsonify({'exists': False})
-
-    exists = ProductCategory.query.filter_by(name=name, organisation_id=organisation_id).first() is not None
-    return jsonify({'exists': exists})
-
-@product_bp.route('/delete_category/<int:category_id>', methods=['POST'])
-def delete_category(category_id):
-    category = ProductCategory.query.get_or_404(category_id)
-    organisation_id = session.get('organisation_id')
-    user_email = session.get('user_email')
-    if not organisation_id:
-        flash('User is not logged in!', 'danger')
-        return redirect(url_for('auth.login'))
-
-    db.session.delete(category)
-    db.session.commit()
-    flash('Category deleted successfully!', 'success')
-    return redirect(url_for('product.view_categories'))
-
-@product_bp.route('/check_sku', methods=['POST'])
-def check_sku():
-    sku = request.form.get('SKU')
-    organisation_id = session.get('organisation_id')
-    user_email = session.get('user_email')
-    if not organisation_id:
-        return jsonify({'exists': False})
-
-    exists = Product.query.filter_by(SKU=sku, organisation_id=organisation_id).first() is not None
-    return jsonify({'exists': exists})
- 
-
