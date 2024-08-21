@@ -18,7 +18,7 @@
             <h2 class="text-xl font-semibold mb-3">Customer Details</h2>
             <p><strong>Name:</strong> {{ customer.name }}</p>
             <p><strong>Phone:</strong> {{ customer.phone }}</p>
-            <p><strong>Flat No:</strong> {{ customer.flat_no }}</p> <!-- Ensure this is correct -->
+            <p><strong>Flat No:</strong> {{ customer.flat_no }}</p>
             <p><strong>Street:</strong> {{ customer.street }}</p>
             <p><strong>City:</strong> {{ customer.city }}</p>
             <p><strong>District:</strong> {{ customer.district }}</p>
@@ -34,8 +34,8 @@
         </div>
         <div class="flex justify-between mt-5">
             <a href="{{ url_for('billing.create_online_bill', bill_id=bill.id) }}" class="bg-yellow-500 text-white px-4 py-2 rounded-md">Edit Bill</a>
-            <form action="{{ url_for('billing.create_online_bill', bill_id=bill.id) }}" method="POST">
-                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md">Finalize Bill</button>
+            <form action="{{ url_for('billing.finalize_bill', bill_id=bill.id) }}" method="POST">
+                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md">Save and Finalize</button>
             </form>
         </div>
     </div>
