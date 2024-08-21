@@ -10,21 +10,37 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js" integrity="sha512-L0Shl7nXXzIlBSUUPpxrokqq4ojqgZFQczTYlGjzONGTDAcLremjwaWv5A+EDLnxhQzY5xUZPWLOLqYRkY0Cbw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script>
     function loadContent(url, element) {
-      fetch(url)
-        .then(response => response.text())
-        .then(html => {
-          document.getElementById('main-content').innerHTML = html;
-          const items = document.querySelectorAll('.sidebar-item');
-          items.forEach(item => item.classList.remove('active'));
-          element.classList.add('active');
+  fetch(url)
+    .then(response => response.text())
+    .then(html => {
+      document.getElementById('main-content').innerHTML = html;
+      const items = document.querySelectorAll('.sidebar-item');
+      items.forEach(item => item.classList.remove('active'));
+      element.classList.add('active');
 
-          const scriptTags = document.getElementById('main-content').getElementsByTagName('script');
-          for (let scriptTag of scriptTags) {
-            eval(scriptTag.innerText);
-          }
-        })
-        .catch(error => console.error('Error loading content:', error));
-    }
+      // Re-run any scripts in the loaded content
+      const scriptTags = document.getElementById('main-content').getElementsByTagName('script');
+      for (let scriptTag of scriptTags) {
+        const newScript = document.createElement('script');
+        newScript.type = scriptTag.type || 'text/javascript';
+        if (scriptTag.src) {
+          newScript.src = scriptTag.src;
+        } else {
+          newScript.textContent = scriptTag.innerText;
+        }
+        document.body.appendChild(newScript);
+      }
+
+      // Specific initialization for the dashboard
+      if (url === '/dashboard') {
+        fetch('/dashboard_data?filter=today')
+          .then(response => response.json())
+          .then(data => initializeCharts(data)); // Ensure initializeCharts is defined
+      }
+    })
+    .catch(error => console.error('Error loading content:', error));
+}
+
 
     function toggleDropdown(id) {
       closeOtherDropdowns(id);
@@ -54,8 +70,6 @@
       });
     }
 
-    
-
     document.addEventListener('DOMContentLoaded', () => {
       loadContent('/dashboard', document.getElementById('dashboard-link'));
     });
@@ -83,6 +97,9 @@
       display: flex;
       gap: 10px;
     }
+    .sidebar-item {
+      width: 100%; /* Ensures buttons take full width */
+    }
   </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -103,7 +120,7 @@
         <li>
           <button class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="toggleDropdown('billing-dropdown')">
             <i class="fas fa-file-invoice w-6 h-6 text-gray-500"></i>
-            <span class="ml-3 pr-24">Billing</span>
+            <span class="ml-3">Billing</span>
             <i class="fas fa-chevron-down ml-auto"></i>
           </button>
           <ul id="billing-dropdown" class="hidden ml-6 space-y-2 dropdown">
@@ -124,7 +141,7 @@
         <li>
           <button class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="toggleDropdown('transactions-dropdown')">
             <i class="fas fa-file-alt w-6 h-6 text-gray-500"></i>
-            <span class="ml-3 pr-20">Transactions</span>
+            <span class="ml-3">Transactions</span>
             <i class="fas fa-chevron-down ml-auto"></i>
           </button>
           <ul id="transactions-dropdown" class="hidden ml-6 space-y-2 dropdown">
@@ -151,7 +168,7 @@
         <li>
           <button class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="toggleDropdown('product-dropdown')">
             <i class="fas fa-box-open w-6 h-6 text-gray-500"></i>
-            <span class="ml-3 pr-24">Products</span>
+            <span class="ml-3">Products</span>
             <i class="fas fa-chevron-down ml-auto"></i>
           </button>
           <ul id="product-dropdown" class="hidden ml-6 space-y-2 dropdown">
@@ -203,7 +220,7 @@
           </a>
         </li>
       </ul>
-      </div>
+    </div>
   </aside>
 
   <!-- Main Content -->
