@@ -6,8 +6,95 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.5.4/flowbite.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* Include the flash message and form container styles here */
+        .flash-message {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4441da;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        .fade-in-out {
+            animation: fadeInOut 2s ease-in-out;
+        }
+        @keyframes fadeInOut {
+            0% {
+                opacity: 0;
+            }
+            20%, 80% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+        .form-container {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        .form-container h1, 
+        .form-container label {
+            color: #333;
+        }
+        .form-container input {
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+        input[type="submit"] {
+            visibility: visible;
+            opacity: 1;
+            display: inline-block;
+            position: static;
+        }
+    </style>
+    
+</head>
+<body class="bg-gray-100">
+    <div id="flash-message" class="flash-message"></div>
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold text-indigo-600 mb-6">Categories</h1>
+        <form action="/add_category" method="post" class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <div class="mb-4">
+                <label for="name" class="block text-gray-700 font-bold mb-2">Category Name:</label>
+                <input type="text" id="name" name="name" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600">
+                <div id="name_alert" class="text-red-500 mt-2" style="display: none;"></div>
+            </div>
+            <div class="flex justify-end">
+                <input type="submit" value="Add Category" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 cursor-pointer">
+            </div>
+        </form>
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border border-gray-200">
+                <thead>
+                    <tr>
+                        <th class="py-2 px-4 border-b bg-indigo-100 text-left">Category Name</th>
+                        <th class="py-2 px-4 border-b bg-indigo-100 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for category in categories %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="py-2 px-4 border-b">{{ category.name }}</td>
+                        <td class="py-2 px-4 border-b">
+                            <a href="/edit_category/{{ category.id }}" class="text-blue-500 hover:underline">Edit</a> |
+                            <a href="/delete_category/{{ category.id }}" class="text-red-500 hover:underline">Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
     <script>
-        $(document).ready(function() {
+            $(document).ready(function() {
             $('#name').on('input', function() {
                 var name = $(this).val();
                 $.ajax({
@@ -23,64 +110,33 @@
                     }
                 });
             });
-
-            // Display flash messages if any
-            var flashMessage = "{{ get_flashed_messages(with_categories=True) | tojson }}";
-            if (flashMessage) {
-                var message = JSON.parse(flashMessage);
-                if (message.length > 0) {
-                    $('#flash_alert').text(message[0][1]).show();
-                }
-            }
         });
+
+        function showFlashMessage(message) {
+            const flashMessage = document.getElementById('flash-message');
+            flashMessage.textContent = message;
+            flashMessage.className = "flash-message fade-in-out";
+            flashMessage.style.display = 'block';
+
+            setTimeout(() => {
+                flashMessage.style.display = 'none';
+            }, 2000); // Display for 2 seconds
+        }
+
+        function handleSubmit(event) {
+            event.preventDefault();
+            showFlashMessage("Category added successfully!");
+
+            // Delay form submission to allow flash message to be visible
+            setTimeout(() => {
+                event.target.submit();
+            }, 2000); // 2-second delay before submission
+        }
+
+        // Show any flash messages from the server side
+        {% if get_flashed_messages() %}
+            showFlashMessage("{{ get_flashed_messages()[0] }}");
+        {% endif %}
     </script>
-</head>
-<body class="bg-gray-100">
-    <div class="container mx-auto p-6">
-        <h1 class="text-3xl font-bold text-indigo-600 mb-6">Categories</h1>
-        <form action="/add_category" method="post" class="bg-white p-6 rounded-lg shadow-md mb-6">
-            <div class="mb-4">
-                <label for="name" class="block text-gray-700 font-bold mb-2">Category Name:</label>
-                <input type="text" id="name" name="name" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600">
-                <div id="name_alert" class="text-red-500 mt-2" style="display: none;"></div>
-            </div>
-            <div id="flash_alert" class="text-red-500 mt-2" style="display: none;"></div>
-            <div class="flex justify-end">
-                <input type="submit" value="Add Category" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 cursor-pointer">
-            </div>
-        </form>
-        <div class="overflow-x-auto">
-            <table class="min-w-full bg-white border border-gray-200">
-                <thead>
-                    <tr>
-                        <th class="py-2 px-4 border-b bg-indigo-100 text-left">Category Name</th>
-                        <th class="py-2 px-4 border-b bg-indigo-100 text-left">Products</th>
-                        <th class="py-2 px-4 border-b bg-indigo-100 text-left">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for category in categories %}
-                    <tr class="hover:bg-gray-50">
-                        <td class="py-2 px-4 border-b">{{ category.name }}</td>
-                        <td class="py-2 px-4 border-b">
-                            <ul class="list-disc list-inside">
-                                {% for product in category.product_list %}
-                                <li>{{ product.name }}</li>
-                                {% endfor %}
-                            </ul>
-                        </td>
-                        <td class="py-2 px-4 border-b">
-                            <a href="{{ url_for('product.edit_category', category_id=category.id) }}" class="bg-indigo-600 text-white px-2 py-1 rounded-md hover:bg-indigo-800 font-bold">Edit</a>
-                            <form action="{{ url_for('product.delete_category', category_id=category.id) }}" method="post" style="display:inline;">
-                                <input type="submit" value="Delete" class="bg-indigo-600 text-white font-bold px-2 py-1 rounded-md hover:bg-indigo-800 cursor-pointer">
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.5.4/flowbite.min.js"></script>
 </body>
 </html>
