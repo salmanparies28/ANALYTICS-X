@@ -7,11 +7,87 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.5.4/flowbite.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .flash-message {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4441da;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        .fade-in-out {
+            animation: fadeInOut 2s ease-in-out;
+        }
+        @keyframes fadeInOut {
+            0% {
+                opacity: 0;
+            }
+            20%, 80% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+        .form-container {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        .form-container h1, 
+        .form-container label {
+            color: #333;
+        }
+        .form-container input {
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+        input[type="submit"] {
+            visibility: visible;
+            opacity: 1;
+            display: inline-block;
+            position: static;
+        }
+    </style>
+    <script>
+        function showFlashMessage(message) {
+            const flashMessage = document.getElementById('flash-message');
+            flashMessage.textContent = message;
+            flashMessage.className = "flash-message fade-in-out";
+            flashMessage.style.display = 'block';
+    
+            setTimeout(() => {
+                flashMessage.style.display = 'none';
+            }, 2000); // Display for 2 seconds
+        }
+    
+        function handleSubmit(event) {
+            event.preventDefault();
+            showFlashMessage("Inventory updated successfully!");
+    
+            // Delay form submission to allow flash message to be visible
+            setTimeout(() => {
+                event.target.submit();
+            }, 2000); // 2-second delay before submission
+        }
+    
+        // Add this to your form tag as `onsubmit="handleSubmit(event)"`
+    </script>
+    
 </head>
 <body class="bg-gray-100">
     <div class="container mx-auto p-6">
         <h1 class="text-3xl font-bold text-indigo-600 mb-6">Inventory</h1>
-        <form method="POST" action="{{ url_for('product.inventory') }}" class="bg-white p-6 rounded-lg shadow-md mb-6">
+        <div id="flash-message" class="flash-message"></div> <!-- Flash message container -->
+        <div class="container mx-auto p-6"></div>
+        <form method="POST" action="{{ url_for('product.inventory') }}" class="bg-white p-6 rounded-lg shadow-md mb-6" onsubmit="handleSubmit(event)">
+
             <div class="mb-4">
                 <label for="product_id" class="block text-gray-700 font-bold mb-2">Product:</label>
                 <select name="product_id" id="product_id" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600">
