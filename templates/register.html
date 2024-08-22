@@ -43,6 +43,7 @@
             <div class="mb-4">
                 <label for="phone" class="block text-gray-700">Phone</label>
                 <input type="tel" id="phone" name="phone" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                <p id="phoneError" class="text-red-600 text-sm hidden mt-1">Please enter a valid 10-digit phone number.</p>
             </div>
 
             <div class="mb-4">
@@ -106,6 +107,7 @@
                 <div class="mb-4">
                     <label for="mobile_number" class="block text-gray-700">Mobile Number</label>
                     <input type="tel" id="mobile_number" name="mobile_number" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                    <p id="mobileNumberError" class="text-red-600 text-sm hidden mt-1">Please enter a valid 10-digit mobile number.</p>
                 </div>
                 <div class="mb-4">
                     <label for="landline_number" class="block text-gray-700">Landline Number (Optional)</label>
@@ -177,6 +179,16 @@
                 return false;
             }
 
+            const phone = document.getElementById('phone').value;
+            const phoneError = document.getElementById('phoneError');
+
+            if (!/^\d{10}$/.test(phone)) {
+                phoneError.classList.remove('hidden');
+                return false;
+            } else {
+                phoneError.classList.add('hidden');
+            }
+
             // Show shop details modal after main form validation
             showShopDetailsModal(event);
         }
@@ -221,6 +233,15 @@
 
         function submitShopDetails() {
             const shopDetailsForm = document.getElementById('shopDetailsForm');
+            const mobileNumber = document.getElementById('mobile_number').value;
+            const mobileNumberError = document.getElementById('mobileNumberError');
+
+            if (!/^\d{10}$/.test(mobileNumber)) {
+                mobileNumberError.classList.remove('hidden');
+                return false;
+            } else {
+                mobileNumberError.classList.add('hidden');
+            }
 
             if (!shopDetailsForm.checkValidity()) {
                 alert('Please fill out all required shop details.');
