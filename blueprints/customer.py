@@ -1,6 +1,5 @@
-from flask import Blueprint, request, redirect, url_for, render_template, flash, session
+from flask import Blueprint, request, redirect, url_for, render_template, flash, session, jsonify
 from models import db, Customer
-from flask import jsonify
 
 customer_bp = Blueprint('customer', __name__)
 
@@ -17,7 +16,7 @@ def add_customer():
         # Check if the phone number already exists
         existing_customer = Customer.query.filter_by(phone=phone, organisation_id=organisation_id).first()
         if existing_customer:
-            flash('Number already exists', 'danger')
+            flash('Phone number is already in use!', 'danger')
             return render_template('add_customer.html', existing_phone=True)
 
         name = request.form['name']
@@ -46,7 +45,7 @@ def add_customer():
         db.session.commit()
 
         flash('Customer added successfully!', 'success')
-        return redirect(url_for('auth.home'))
+        return render_template('add_customer.html', existing_phone=False)
 
     return render_template('add_customer.html', existing_phone=False)
 
@@ -75,11 +74,9 @@ def get_customer_details():
     else:
         return jsonify({'exists': False})
 
-
 @customer_bp.route('/view_customers')
 def view_customers():
     organisation_id = session.get('organisation_id')
-    user_email = session.get('user_email')
     if not organisation_id:
         flash('User is not logged in!', 'danger')
         return redirect(url_for('auth.login'))
@@ -116,20 +113,14 @@ def edit_customer(id):
 @customer_bp.route('/check_phone', methods=['POST'])
 def check_phone():
     phone = request.form.get('phone')
-    organisation_id = session.get('organisation_id')
-
-    if not organisation_id:
-        return jsonify({'exists': False})
-
-    exists = Customer.query.filter_by(phone=phone, organisation_id=organisation_id).first() is not None
+    # Example: Check if phone exists in database
+    exists = db.session.query(Customer).filter_by(phone=phone).first() is not None
     return jsonify({'exists': exists})
-
 
 @customer_bp.route('/delete_customer/<int:id>', methods=['POST'])
 def delete_customer(id):
     customer = Customer.query.get_or_404(id)
     organisation_id = session.get('organisation_id')
-    user_email = session.get('user_email')
     if not organisation_id:
         flash('User is not logged in!', 'danger')
         return redirect(url_for('auth.login'))
@@ -155,4 +146,3 @@ def fetch_pincode_details():
         return jsonify(pincode_data)
     else:
         return jsonify({'error': 'Pincode not found'}), 404
-
