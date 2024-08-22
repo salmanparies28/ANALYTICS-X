@@ -79,23 +79,30 @@
         $(document).ready(function() {
             $('#phone').on('input', function() {
                 var phone = $(this).val();
-                $.ajax({
-                    url: '/check_phone',
-                    method: 'POST',
-                    data: { phone: phone },
-                    success: function(response) {
-                        if (response.exists) {
-                            $('#phone_alert').text('Phone number is already in use!').show();
-                            $('#phone').addClass('border-red-500');
-                        } else {
-                            $('#phone_alert').hide();
-                            $('#phone').removeClass('border-red-500');
+
+                // Check if phone number is exactly 10 digits
+                if (phone.length !== 10) {
+                    $('#phone_alert').text('Please enter exactly 10 digits.').show();
+                    $('#phone').addClass('border-red-500');
+                } else {
+                    $.ajax({
+                        url: '/check_phone',
+                        method: 'POST',
+                        data: { phone: phone },
+                        success: function(response) {
+                            if (response.exists) {
+                                $('#phone_alert').text('Phone number is already in use!').show();
+                                $('#phone').addClass('border-red-500');
+                            } else {
+                                $('#phone_alert').hide();
+                                $('#phone').removeClass('border-red-500');
+                            }
+                        },
+                        error: function() {
+                            $('#phone_alert').text('Error checking phone number. Please try again.').show();
                         }
-                    },
-                    error: function() {
-                        $('#phone_alert').text('Error checking phone number. Please try again.').show();
-                    }
-                });
+                    });
+                }
             });
 
             // Pincode validation and autofill
@@ -122,11 +129,10 @@
     </script>
 </head>
 <body class="bg-gray-100">
-    <div class="flash-message" id="flash-message"></div>
     <div class="container mx-auto p-6">
-        <div class="form-container">
             <h1 class="text-3xl font-bold text-indigo-600 mb-6">Add New Customer</h1>
-            <form action="/add_customer" method="post" enctype="multipart/form-data" onsubmit="handleSubmit(event)" class="bg-white p-6 rounded-lg shadow-md">
+            <div class="flash-message" id="flash-message"></div>
+            <form action="/add_customer" method="post" enctype="multipart/form-data" class="bg-white p-6 rounded-lg shadow-md">    
                 <div class="mb-4">
                     <label for="name" class="block text-gray-700 font-bold mb-2">Name:</label>
                     <input type="text" id="name" name="name" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600">
@@ -165,11 +171,13 @@
                     <input type="email" id="email" name="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600">
                 </div>
                 <div class="flex justify-end">
-                    <input type="submit" value="Add Customer" class="bg-indigo-600 text-white font-bold px-4 py-2 rounded-md hover:bg-indigo-700 cursor-pointer">
+                    <input type="submit" value="Add customer" class="bg-indigo-600 text-white font-bold px-4 py-2 rounded-md hover:bg-indigo-700 cursor-pointer">
                 </div>
             </form>
-        </div>
+            <div class="flex justify-end mb-4">
+                <a href="{{ url_for('auth.home') }}" class="bg-gray-600 text-white font-bold px-4 py-2 rounded-md hover:bg-gray-700 cursor-pointer">Back to Home</a>
+            </div>
+        
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.5.4/flowbite.min.js"></script>
 </body>
 </html>
