@@ -9,48 +9,61 @@
 <body class="bg-gray-100 text-gray-800">
     <div class="container mx-auto mt-10">
         <h1 class="text-3xl font-bold mb-5">View Online Bills</h1>
-        <table class="min-w-full bg-white">
-            <thead>
-                <tr>
-                    <th class="py-2">Bill Number</th>
-                    <th class="py-2">Customer Name</th>
-                    <th class="py-2">Phone</th>
-                    <th class="py-2">Total Price</th>
-                    <th class="py-2">Date</th>
-                    <th class="py-2">Products</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for bill in bills %}
-                <tr>
-                    <td class="py-2 text-center">{{ bill.bill_no }}</td>
-                    <td class="py-2 text-center">
-                        {% if customers[bill.customer_id] %}
-                            {{ customers[bill.customer_id].name }}
-                        {% else %}
-                            Unknown Customer
-                        {% endif %}
-                    </td>
-                    <td class="py-2 text-center">
-                        {% if customers[bill.customer_id] %}
-                            {{ customers[bill.customer_id].phone }}
-                        {% else %}
-                            Unknown Phone
-                        {% endif %}
-                    </td>
-                    <td class="py-2 text-center">{{ bill.total_price }}</td>
-                    <td class="py-2 text-center">{{ bill.date }}</td>
-                    <td class="py-2">
-                        <ul>
-                            {% for item in bill_items_dict[bill.id] %}
-                            <li>{{ item.product_name }} ({{ item.quantity }})</li>
-                            {% endfor %}
-                        </ul>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        
+        <!-- Search Form -->
+        <form action="{{ url_for('billing.search_online_bill') }}" method="GET" class="mb-5">
+            <div class="flex items-center">
+                <input 
+                    type="text" 
+                    name="bill_no" 
+                    placeholder="Search by Bill Number..." 
+                    class="w-full px-4 py-2 border rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                >
+                <button 
+                    type="submit" 
+                    class="bg-blue-500 text-white px-4 py-2 rounded-r-md hover:bg-blue-600">
+                    Search
+                </button>
+            </div>
+        </form>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border border-gray-200">
+                <thead>
+                    <tr class="bg-gray-200">
+                        <th class="py-3 px-6 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border-b">Bill Number</th>
+                        <th class="py-3 px-6 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border-b">Date</th>
+                        <th class="py-3 px-6 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border-b">Customer Name</th>
+                        <th class="py-3 px-6 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border-b">Products</th>
+                        <th class="py-3 px-6 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border-b">Total Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bill in bills %}
+                    <tr class="hover:bg-gray-100">
+                        <td class="py-3 px-6 text-center border-b">{{ bill.bill_no }}</td>
+                        <td class="py-3 px-6 text-center border-b">{{ bill.date }}</td>
+                        <td class="py-3 px-6 text-center border-b">
+                            {% if customers[bill.customer_id] %}
+                                {{ customers[bill.customer_id].name }}
+                            {% else %}
+                                Unknown Customer
+                            {% endif %}
+                        </td>
+                        <td class="py-3 px-6 text-left border-b">
+                            <ul class="list-disc list-inside">
+                                {% for item in bill_items_dict[bill.id] %}
+                                <li>{{ item.product_name }} ({{ item.quantity }})</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                        <td class="py-3 px-6 text-center border-b">₹{{ bill.total_price }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </body>
 </html>
