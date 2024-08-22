@@ -16,7 +16,6 @@
                     <tr>
                         <th class="py-2 px-4 border-b bg-indigo-100 text-left">Product Name</th>
                         <th class="py-2 px-4 border-b bg-indigo-100 text-left">SKU</th>
-                        <th class="py-2 px-4 border-b bg-indigo-100 text-left">Quantity</th>
                         <th class="py-2 px-4 border-b bg-indigo-100 text-left">Seller</th>
                         <th class="py-2 px-4 border-b bg-indigo-100 text-left">Actions</th>
                     </tr>
@@ -26,7 +25,6 @@
                         <tr>
                             <td class="py-2 px-4 border-b">{{ product.name }}</td>
                             <td class="py-2 px-4 border-b">{{ product.SKU }}</td>
-                            <td class="py-2 px-4 border-b">{{ product.quantity }}</td>
                             <td class="py-2 px-4 border-b">{{ product.seller }}</td>
                             <td class="py-2 px-4 border-b">
                                 <a href="{{ url_for('product.edit_product', product_id=product.id) }}" class="text-indigo-600 hover:underline">Edit</a> |
@@ -43,3 +41,4 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.5.4/flowbite.min.js"></script>
 </body>
 </html>
+

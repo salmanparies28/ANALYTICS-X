@@ -233,3 +233,14 @@ def inventory():
      .filter(Product.organisation_id == organisation_id).all()
 
     return render_template('inventory.html',products=products, inventories=inventories)
+
+# Add this route to product.py
+@product_bp.route('/low_inventory_count')
+def low_inventory_count():
+    organisation_id = session.get('organisation_id')
+    if not organisation_id:
+        return jsonify({'low_inventory': False})
+    
+    low_inventory_count = Inventory.query.filter_by(organisation_id=organisation_id).filter(Inventory.quantity < 15).count()
+    return jsonify({'low_inventory': low_inventory_count > 0})
+

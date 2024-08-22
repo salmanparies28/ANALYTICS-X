@@ -73,6 +73,23 @@
     document.addEventListener('DOMContentLoaded', () => {
       loadContent('/dashboard', document.getElementById('dashboard-link'));
     });
+
+    
+  document.addEventListener('DOMContentLoaded', () => {
+    // Check for low inventory
+    fetch('/low_inventory_count')
+      .then(response => response.json())
+      .then(data => {
+        if (data.low_inventory) {
+          const inventoryLink = document.getElementById('inventory-link');
+          const badge = document.createElement('span');
+          badge.className = 'inline-block w-2 h-2 ml-2 bg-red-500 rounded-full';
+          inventoryLink.appendChild(badge);
+        }
+      });
+  });
+</script>
+
   </script>
   <style>
     .active {
@@ -187,11 +204,12 @@
           </ul>
         </li>
         <li>
-          <a href="javascript:void(0);" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/inventory', this)">
+          <a href="javascript:void(0);" id="inventory-link" class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="loadContent('/inventory', this)">
             <i class="fas fa-warehouse w-6 h-6 text-gray-500"></i>
             <span class="ml-3">Inventory</span>
           </a>
         </li>
+        
         <li>
           <button class="flex items-center p-2 text-gray-900 font-bold rounded-lg hover:bg-indigo-400 hover:text-gray-100 group sidebar-item" onclick="toggleDropdown('customer-dropdown')">
             <i class="fas fa-users w-6 h-6 text-gray-500"></i>
