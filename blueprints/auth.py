@@ -19,7 +19,7 @@ with open(csv_file_path, newline='') as csvfile:
     for row in reader:
         pincode_data[row['Pincode']] = {
             'city': row['Office Name'],
-            'district': row['District'],
+            'district': row['District'],  
             'state': row['StateName'],
             'country': 'India'  # Assuming the country is always India
         }
@@ -230,7 +230,6 @@ def settings():
 
     return render_template('settings.html', user=user)
 
-
 @auth_bp.route('/update_password', methods=['POST'])
 def update_password():
     if 'organisation_id' not in session:
@@ -247,23 +246,46 @@ def update_password():
     confirm_password = request.form['confirm_password']
 
     if not check_password_hash(user.password, old_password):
-        message = 'Old password is incorrect.'
-        category = 'danger'
+        flash('Old password is incorrect.', 'danger')
     elif new_password != confirm_password:
-        message = 'New passwords do not match.'
-        category = 'danger'
+        flash('New passwords do not match.', 'danger')
     else:
         user.password = generate_password_hash(new_password)
         try:
             db.session.commit()
-            message = 'Password updated successfully!'
-            category = 'success'
+            flash('Password updated successfully!', 'success')
         except Exception as e:
             db.session.rollback()
-            message = 'An error occurred while updating the password.'
-            category = 'danger'
+            flash('An error occurred while updating the password.', 'danger')
 
-    return render_template('settings.html', user=user, message=message, category=category, form='updatePassword')
+    return redirect(url_for('auth.settings'))
+
+@auth_bp.route('/update_whatsapp', methods=['POST'])
+def update_whatsapp():
+    if 'organisation_id' not in session:
+        flash('You must be logged in to update your WhatsApp number.', 'danger')
+        return redirect(url_for('auth.login'))
+
+    user = Organisation.query.get(session['organisation_id'])
+    if not user:
+        flash('User not found!', 'danger')
+        return redirect(url_for('auth.login'))
+
+    whatsapp_number = request.form['whatsapp_number']
+
+    if not whatsapp_number.isdigit() or len(whatsapp_number) != 10:
+        flash('Please enter a valid 10-digit WhatsApp number.', 'danger')
+    else:
+        user.whatsapp_number = whatsapp_number
+        try:
+            db.session.commit()
+            flash('WhatsApp number updated successfully!', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash('An error occurred while updating the WhatsApp number.', 'danger')
+
+    return redirect(url_for('auth.settings'))
+
 
 @auth_bp.route('/new-forgot-password', methods=['GET', 'POST'])
 def new_forgot_password():
@@ -279,34 +301,3 @@ def new_forgot_password():
             flash('No account found with that email and phone number combination.', 'danger')
     return render_template('new_forgot_password.html')
 
-@auth_bp.route('/update_whatsapp', methods=['POST'])
-def update_whatsapp():
-    if 'organisation_id' not in session:
-        flash('You must be logged in to update your WhatsApp number.', 'danger')
-        return redirect(url_for('auth.login'))
-
-    user = Organisation.query.get(session['organisation_id'])
-    if not user:
-        flash('User not found!', 'danger')
-        return redirect(url_for('auth.login'))
-
-    whatsapp_number = request.form['whatsapp_number']
-
-    # Backend validation to ensure exactly 10 digits
-    if not whatsapp_number.isdigit() or len(whatsapp_number) != 10:
-        flash('Please enter a valid 10-digit WhatsApp number.', 'danger')
-        return redirect(url_for('auth.settings'))
-
-    # Update the user's WhatsApp number
-    user.whatsapp_number = whatsapp_number
-
-    try:
-        db.session.commit()
-        message = 'WhatsApp number updated successfully!'
-        category = 'success'
-    except Exception as e:
-        db.session.rollback()
-        message = 'An error occurred while updating the WhatsApp number.'
-        category = 'danger'
-
-    return render_template('settings.html', user=user, message=message, category=category, form='updateWhatsApp')
