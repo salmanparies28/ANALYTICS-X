@@ -14,6 +14,19 @@
             transform: translateX(-50%);
             z-index: 1000;
         }
+        .back-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4441da;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            font-size: 16px;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -107,16 +120,12 @@
         </form>
     </div>
 
+    <!-- Back to Home Button -->
+    <div class="flex justify-end mb-4">
+        <a href="{{ url_for('auth.home') }}" class="bg-indigo-500 text-white px-4 py-2 rounded-md ">Back to Home</a>
+    </div>
+
     <script>
-        $(document).ready(function() {
-    // Hide flash message after 2 seconds
-    setTimeout(function() {
-        $('.flash-message').fadeOut('slow');
-    }, 2000);
-});
-
-
-
         $(document).ready(function() {
             // Hide flash message after 2 seconds
             setTimeout(function() {

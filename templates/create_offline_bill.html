@@ -45,20 +45,33 @@
             }
         }
         .form-container {
-            background-color: #f9f9f9; /* Light gray background color for the form */
+            background-color: #f9f9f9;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-            color: #333; /* Dark text for contrast inside the form */
-            border: none; /* Remove any border */
+            color: #333;
+            border: none;
         }
         .form-container h1, 
         .form-container label {
-            color: #333; /* Ensure labels and headings are readable */
+            color: #333;
         }
         .form-container input {
-            background-color: rgba(255, 255, 255, 0.8); /* Slightly transparent input background */
+            background-color: rgba(255, 255, 255, 0.8);
         }
+        .back-button {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background-color: #4441da;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 50%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    font-size: 16px;
+}
+
     </style>
 
     <script>
@@ -121,17 +134,16 @@
 
             setTimeout(() => {
                 flashMessage.style.display = 'none';
-            }, 2000); // Display for 2 seconds
+            }, 2000);
         }
 
         function handleSubmit(event) {
             event.preventDefault();
             showFlashMessage("Bill created successfully!");
 
-            // Delay form submission to allow flash message to be visible
             setTimeout(() => {
                 event.target.submit();
-            }, 1000); // 1-second delay before submission
+            }, 1000);
         }
     </script>
 </head>
@@ -181,6 +193,11 @@
                 <button type="submit" class="bg-indigo-500 text-white px-4 py-2 rounded-md">CREATE BILL</button>
             </div>
         </form>
+    </div>
+
+    <!-- Back to Home Button -->
+    <div class="flex justify-end mb-4">
+        <a href="{{ url_for('auth.home') }}" class="bg-indigo-500 text-white  px-4 py-2 rounded-md ">Back to Home</a>
     </div>
 </body>
 </html>
