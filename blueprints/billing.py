@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, redirect, url_for, flash, session
+from flask import Blueprint, request, render_template, redirect, url_for, session, flash
 from models import db, Organisation, TransactionRecord, TransactionItem, Product, Inventory, Customer
 from datetime import datetime
 
@@ -10,7 +10,7 @@ def create_online_bill():
         try:
             organisation_id = session.get('organisation_id')
             if not organisation_id:
-                flash('User is not logged in!', 'danger')
+                flash("User is not logged in!", "error")
                 return redirect(url_for('auth.login'))
 
             # Fetch customer details from form
@@ -29,7 +29,7 @@ def create_online_bill():
             date = datetime.now().date()
 
             if not product_identifiers or not quantities:
-                flash('Product identifier and quantity are required.', 'danger')
+                flash("Product identifier and quantity are required.", "error")
                 return render_template('create_online_bill.html', bill_number=generate_bill_number())
 
             # Check if customer exists, create new if not
@@ -56,18 +56,18 @@ def create_online_bill():
             for identifier, quantity in zip(product_identifiers, quantities):
                 quantity = int(quantity)
                 product = Product.query.filter(
-                    (Product.name.ilike(f'%{identifier}%')) | 
-                    (Product.SKU.ilike(f'%{identifier}%'))
+                    (Product.name == identifier) | 
+                    (Product.SKU == identifier)
                 ).first()
 
                 if not product:
-                    flash(f"Product not found: {identifier}", 'danger')
+                    flash(f"Product not found: {identifier}", "error")
                     return render_template('create_online_bill.html', bill_number=generate_bill_number())
 
                 inventory = Inventory.query.filter_by(product_id=product.id).first()
                 
                 if inventory and inventory.quantity < quantity:
-                    flash(f"Not enough inventory for {product.name} (SKU: {product.SKU}). Available: {inventory.quantity}, Requested: {quantity}", 'danger')
+                    flash(f"Not enough inventory for {product.name} (SKU: {product.SKU}). Available: {inventory.quantity}, Requested: {quantity}", "error")
                     return render_template('create_online_bill.html', bill_number=generate_bill_number())
 
                 if inventory:
@@ -75,7 +75,7 @@ def create_online_bill():
                     inventory.quantity -= quantity
                     items.append((product.id, quantity, product.selling_price * quantity))
                 else:
-                    flash(f"No inventory record found for {product.name} (SKU: {product.SKU}).", 'danger')
+                    flash(f"No inventory record found for {product.name} (SKU: {product.SKU}).", "error")
                     return render_template('create_online_bill.html', bill_number=generate_bill_number())
 
             # Create and save new bill
@@ -100,11 +100,11 @@ def create_online_bill():
 
             db.session.commit()
 
-            flash('Online bill created successfully! Please review the bill before finalizing.', 'success')
+            flash("Online bill created successfully! Please review the bill before finalizing.", "success")
             return redirect(url_for('billing.view_online_bills'))
         except Exception as e:
             db.session.rollback()  # Rollback in case of any exception
-            flash(f"Error: {str(e)}", 'danger')
+            flash(f"Error: {str(e)}", "error")
             return render_template('create_online_bill.html', bill_number=generate_bill_number())
 
     bill_number = generate_bill_number()
@@ -115,23 +115,23 @@ def finalize_bill(bill_id):
     try:
         organisation_id = session.get('organisation_id')
         if not organisation_id:
-            flash('User is not logged in!', 'danger')
+            flash("User is not logged in!", "error")
             return redirect(url_for('auth.login'))
 
         bill = TransactionRecord.query.get(bill_id)
         if not bill or bill.organisation_id != organisation_id:
-            flash('Bill not found!', 'danger')
+            flash("Bill not found!", "error")
             return redirect(url_for('billing.view_online_bills'))
 
         # Finalize the bill (e.g., mark it as finalized)
         bill.status = 'finalized'  # Assuming you have a 'status' field
         db.session.commit()
 
-        flash('Bill finalized successfully!', 'success')
+        flash("Bill finalized successfully!", "success")
         return redirect(url_for('billing.view_online_bills'))
     except Exception as e:
         db.session.rollback()
-        flash(f"Error: {str(e)}", 'danger')
+        flash(f"Error: {str(e)}", "error")
         return redirect(url_for('billing.view_online_bills'))
 
 @billing_bp.route('/view_online_bills')
@@ -139,7 +139,7 @@ def view_online_bills():
     try:
         organisation_id = session.get('organisation_id')
         if not organisation_id:
-            flash('User is not logged in!', 'danger')
+            flash("User is not logged in!", "error")
             return redirect(url_for('auth.login'))
 
         bills = TransactionRecord.query.filter_by(organisation_id=organisation_id, billing_mode='online').all()
@@ -160,7 +160,7 @@ def view_online_bills():
         
         return render_template('view_online_bills.html', bills=bills, customers=customers, bill_items_dict=bill_items_dict)
     except Exception as e:
-        flash(f"Error: {str(e)}", 'danger')
+        flash(f"Error: {str(e)}", "error")
         return redirect(url_for('billing.view_online_bills'))
 
 def generate_bill_number():
@@ -176,7 +176,7 @@ def create_offline_bill():
         try:
             organisation_id = session.get('organisation_id')
             if not organisation_id:
-                flash('User is not logged in!', 'danger')
+                flash("User is not logged in!", "error")
                 return redirect(url_for('auth.login'))
 
             customer_phone = request.form.get('customer_phone', '')
@@ -187,32 +187,38 @@ def create_offline_bill():
             date = datetime.now().date()
 
             if not product_identifiers or not quantities:
-                flash('Product identifier and quantity are required.', 'danger')
+                flash("Product identifier and quantity are required.", "error")
                 return redirect(url_for('billing.create_offline_bill'))
 
             total_price = 0
             items = []
+            invalid_products = []
 
             for identifier, quantity in zip(product_identifiers, quantities):
                 quantity = int(quantity)
                 product = Product.query.filter(
-                    (Product.name.ilike(f'%{identifier}%')) | 
-                    (Product.SKU.ilike(f'%{identifier}%'))
+                    (Product.name == identifier) | 
+                    (Product.SKU == identifier)
                 ).first()
 
                 if not product:
-                    flash(f"Product not found: {identifier}", 'danger')
-                    return redirect(url_for('billing.create_offline_bill'))
+                    invalid_products.append(f"Product not found: {identifier}")
+                    continue
 
                 inventory = Inventory.query.filter_by(product_id=product.id).first()
                 if not inventory or inventory.quantity < quantity:
-                    flash(f"Not enough inventory available for product: {identifier}", 'danger')
-                    return redirect(url_for('billing.create_offline_bill'))
+                    invalid_products.append(f"Not enough inventory for product: {identifier} (Available: {inventory.quantity if inventory else 0}, Requested: {quantity})")
+                    continue
 
                 total_price += product.selling_price * quantity
-                inventory.quantity -= quantity
+                inventory.quantity -= quantity  # Decrease the inventory
                 items.append((product.id, quantity, product.selling_price * quantity))
 
+            if invalid_products:
+                flash("Errors found in the bill: " + "; ".join(invalid_products), "error")
+                return redirect(url_for('billing.create_offline_bill'))
+
+            # Create the bill if no errors
             new_bill = TransactionRecord(
                 bill_no=generate_bill_number(),
                 date=date,
@@ -233,11 +239,11 @@ def create_offline_bill():
                 ))
 
             db.session.commit()
-            flash('Offline bill created successfully!', 'success')
+            flash("Offline bill created successfully!", "success")
             return redirect(url_for('billing.create_offline_bill'))
         except Exception as e:
             db.session.rollback()
-            flash(f"Error: {str(e)}", 'danger')
+            flash(f"Error: {str(e)}", "error")
             return redirect(url_for('billing.create_offline_bill'))
         
     return render_template('create_offline_bill.html')
@@ -247,12 +253,12 @@ def edit_offline_bill(bill_id):
     try:
         organisation_id = session.get('organisation_id')
         if not organisation_id:
-            flash('User is not logged in!', 'danger')
+            flash("User is not logged in!", "error")
             return redirect(url_for('auth.login'))
 
         bill = TransactionRecord.query.filter_by(id=bill_id, organisation_id=organisation_id, billing_mode='offline').first()
         if not bill:
-            flash('Bill not found!', 'danger')
+            flash("Bill not found!", "error")
             return redirect(url_for('billing.view_offline_bills'))
 
         bill_items = db.session.query(
@@ -264,7 +270,7 @@ def edit_offline_bill(bill_id):
 
         return render_template('edit_offline_bill.html', bill=bill, bill_items=bill_items)
     except Exception as e:
-        flash(f"Error: {str(e)}", 'danger')
+        flash(f"Error: {str(e)}", "error")
         return redirect(url_for('billing.view_offline_bills'))
 
 @billing_bp.route('/update_offline_bill/<int:bill_id>', methods=['POST'])
@@ -272,19 +278,19 @@ def update_offline_bill(bill_id):
     try:
         organisation_id = session.get('organisation_id')
         if not organisation_id:
-            flash('User is not logged in!', 'danger')
+            flash("User is not logged in!", "error")
             return redirect(url_for('auth.login'))
 
         bill = TransactionRecord.query.filter_by(id=bill_id, organisation_id=organisation_id, billing_mode='offline').first()
         if not bill:
-            flash('Bill not found!', 'danger')
+            flash("Bill not found!", "error")
             return redirect(url_for('billing.view_offline_bills'))
 
         product_identifiers = request.form.getlist('product_identifier[]')
         quantities = request.form.getlist('quantity[]')
 
         if not product_identifiers or not quantities:
-            flash('Product identifier and quantity are required.', 'danger')
+            flash("Product identifier and quantity are required.", "error")
             return redirect(url_for('billing.edit_offline_bill', bill_id=bill.id))
 
         # Remove existing items and revert inventory
@@ -300,17 +306,17 @@ def update_offline_bill(bill_id):
         for identifier, quantity in zip(product_identifiers, quantities):
             quantity = int(quantity)
             product = Product.query.filter(
-                (Product.name.ilike(f'%{identifier}%')) | 
-                (Product.SKU.ilike(f'%{identifier}%'))
+                (Product.name == identifier) | 
+                (Product.SKU == identifier)
             ).first()
 
             if not product:
-                flash(f"Product not found: {identifier}", 'danger')
+                flash(f"Product not found: {identifier}", "error")
                 return redirect(url_for('billing.edit_offline_bill', bill_id=bill.id))
 
             inventory = Inventory.query.filter_by(product_id=product.id).first()
             if not inventory or inventory.quantity < quantity:
-                flash(f"Not enough inventory available for product: {identifier}", 'danger')
+                flash(f"Not enough inventory available for product: {identifier}", "error")
                 return redirect(url_for('billing.edit_offline_bill', bill_id=bill.id))
 
             total_price += product.selling_price * quantity
@@ -326,11 +332,11 @@ def update_offline_bill(bill_id):
         db.session.add_all(items)
         db.session.commit()
 
-        flash('Bill updated successfully!', 'success')
+        flash("Bill updated successfully!", "success")
         return redirect(url_for('billing.view_offline_bills'))
     except Exception as e:
         db.session.rollback()
-        flash(f"Error: {str(e)}", 'danger')
+        flash(f"Error: {str(e)}", "error")
         return redirect(url_for('billing.edit_offline_bill', bill_id=bill.id))
 
 @billing_bp.route('/search_offline_bill', methods=['GET'])
@@ -338,7 +344,7 @@ def search_offline_bill():
     try:
         organisation_id = session.get('organisation_id')
         if not organisation_id:
-            flash('User is not logged in!', 'danger')
+            flash("User is not logged in!", "error")
             return redirect(url_for('auth.login'))
 
         bill_no = request.args.get('bill_no')
@@ -369,7 +375,7 @@ def search_offline_bill():
         
         return render_template('view_offline_bills.html', bills=bills, bill_items_dict=bill_items_dict)
     except Exception as e:
-        flash(f"Error: {str(e)}", 'danger')
+        flash(f"Error: {str(e)}", "error")
         return redirect(url_for('billing.view_offline_bills'))
 
 @billing_bp.route('/view_offline_bills')
@@ -377,7 +383,7 @@ def view_offline_bills():
     try:
         organisation_id = session.get('organisation_id')
         if not organisation_id:
-            flash('User is not logged in!', 'danger')
+            flash("User is not logged in!", "error")
             return redirect(url_for('auth.login'))
 
         bills = TransactionRecord.query.filter_by(organisation_id=organisation_id, billing_mode='offline').all()
@@ -396,7 +402,7 @@ def view_offline_bills():
         
         return render_template('view_offline_bills.html', bills=bills, bill_items_dict=bill_items_dict)
     except Exception as e:
-        flash(f"Error: {str(e)}", 'danger')
+        flash(f"Error: {str(e)}", "error")
         return redirect(url_for('billing.view_offline_bills'))
 
 @billing_bp.route('/search_online_bill', methods=['GET'])
@@ -404,19 +410,19 @@ def search_online_bill():
     try:
         organisation_id = session.get('organisation_id')
         if not organisation_id:
-            flash('User is not logged in!', 'danger')
+            flash("User is not logged in!", "error")
             return redirect(url_for('auth.login'))
 
         bill_no = request.args.get('bill_no', '').strip()
         
         if not bill_no:
-            flash('Please enter a bill number to search.', 'warning')
+            flash("Please enter a bill number to search.", "error")
             return redirect(url_for('billing.view_online_bills'))
 
         bills = TransactionRecord.query.filter_by(organisation_id=organisation_id, bill_no=bill_no, billing_mode='online').all()
 
         if not bills:
-            flash(f'No bills found for Bill Number: {bill_no}', 'danger')
+            flash(f"No bills found for Bill Number: {bill_no}", "error")
             return redirect(url_for('billing.view_online_bills'))
 
         customers = {customer.id: customer for customer in Customer.query.all()}
@@ -434,5 +440,5 @@ def search_online_bill():
 
         return render_template('view_online_bills.html', bills=bills, customers=customers, bill_items_dict=bill_items_dict)
     except Exception as e:
-        flash(f"Error: {str(e)}", 'danger')
+        flash(f"Error: {str(e)}", "error")
         return redirect(url_for('billing.view_online_bills'))
