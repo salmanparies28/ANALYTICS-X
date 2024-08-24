@@ -15,7 +15,7 @@ class Organisation(db.Model):
     district = db.Column(db.String(100), nullable=False)
     state = db.Column(db.String(100), nullable=False)
     country = db.Column(db.String(100), nullable=False)
-    pincode = db.Column(db.String(20), nullable=False)
+    pincode = db.Column(db.String(20), nullable=False)     
     mobile_number = db.Column(db.String(20), nullable=False)
     landline_number = db.Column(db.String(20), nullable=True)
     website_address = db.Column(db.String(100), nullable=True)
